@@ -45,6 +45,9 @@ function initializeDatabase() {
       tuner_notes TEXT,
       payment_status TEXT DEFAULT 'pending',
       payment_id TEXT,
+      download_count INTEGER DEFAULT 0,
+      download_limit INTEGER DEFAULT 3,
+      expires_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
