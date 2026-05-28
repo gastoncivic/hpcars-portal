@@ -150,6 +150,24 @@ router.put('/users/:id/membership', (req, res) => {
   }
 });
 
+// ─── DELETE USER ───
+router.delete('/users/:id', (req, res) => {
+  try {
+    // Don't allow deleting yourself
+    if (parseInt(req.params.id) === req.user.id) {
+      return res.status(400).json({ error: 'No podés eliminar tu propia cuenta' });
+    }
+    db.prepare('DELETE FROM notifications WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM usage_logs WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM email_verifications WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM files WHERE user_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al eliminar usuario' });
+  }
+});
+
 // ─── UPDATE USER ROLE ───
 router.put('/users/:id/role', (req, res) => {
   const { role } = req.body;
