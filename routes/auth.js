@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const db = require('../db');
+const { sendEmail, emailVerification } = require('./email');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'hpcars_secret_change_in_production';
@@ -128,7 +129,9 @@ router.post('/register', async (req, res) => {
     db.prepare('INSERT INTO email_verifications (user_id, token, expires_at) VALUES (?,?,?)').run(result.lastInsertRowid, verifyToken, expires);
 
     console.log(`📧 Verify email token for ${name}: ${verifyToken}`);
-    // TODO: sendVerificationEmail(email, name, verifyToken, BASE_URL);
+    // Send verification email
+    const { subject, html } = emailVerification(name, verifyToken);
+    sendEmail({ to: email, subject, html });
 
     db.prepare('INSERT INTO usage_logs (user_id, action, details) VALUES (?,?,?)').run(result.lastInsertRowid, 'register', JSON.stringify({ email }));
 
