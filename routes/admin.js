@@ -1,272 +1,183 @@
 const express = require('express');
-const db = require('../db');
+const path = require('path');
+const fs = require('fs');
+const { db } = require('../db');
 const { verifyToken, isAdmin } = require('./auth');
 const { sendEmail, fileReady } = require('./email');
 
 const router = express.Router();
 
-// Accept token from query param (for direct browser downloads)
 router.use((req, res, next) => {
-  if (req.query.t && !req.headers.authorization) {
-    req.headers.authorization = 'Bearer ' + req.query.t;
-  }
+  if (req.query.t && !req.headers.authorization) req.headers.authorization = 'Bearer ' + req.query.t;
   next();
 });
-
-// All admin routes require token + admin role
 router.use(verifyToken, isAdmin);
 
 // ─── STATS ───
-router.get('/stats', (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0];
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const [totalUsers, totalFiles, pendingFiles, usersToday, filesToday, readyFiles, completedFiles] = await Promise.all([
+      db.get('SELECT COUNT(*) as c FROM users'),
+      db.get('SELECT COUNT(*) as c FROM files'),
+      db.get("SELECT COUNT(*) as c FROM files WHERE status IN ('pending','waiting','processing')"),
+      db.get('SELECT COUNT(*) as c FROM users WHERE DATE(created_at) = ?', [today]),
+      db.get('SELECT COUNT(*) as c FROM files WHERE DATE(created_at) = ?', [today]),
+      db.get("SELECT COUNT(*) as c FROM files WHERE status = 'ready'"),
+      db.get("SELECT COUNT(*) as c FROM files WHERE status = 'completed'"),
+    ]);
 
-    const totalUsers = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
-    const totalFiles = db.prepare('SELECT COUNT(*) as c FROM files').get().c;
-    const pendingFiles = db.prepare("SELECT COUNT(*) as c FROM files WHERE status IN ('pending','waiting','processing')").get().c;
-    const usersToday = db.prepare("SELECT COUNT(*) as c FROM users WHERE DATE(created_at) = ?").get(today).c;
-    const filesToday = db.prepare("SELECT COUNT(*) as c FROM files WHERE DATE(created_at) = ?").get(today).c;
-    const readyFiles = db.prepare("SELECT COUNT(*) as c FROM files WHERE status = 'ready'").get().c;
-    const completedFiles = db.prepare("SELECT COUNT(*) as c FROM files WHERE status = 'completed'").get().c;
-
-    // Daily activity last 7 days
     const days = [];
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const d = new Date(Date.now() - i * 86400000);
       const dateStr = d.toISOString().split('T')[0];
       const dayLabel = d.toLocaleDateString('es', { weekday: 'short' });
-      const count = db.prepare('SELECT COUNT(*) as c FROM files WHERE DATE(created_at) = ?').get(dateStr).c;
-      days.push({ day: dayLabel, date: dateStr, count });
+      const cnt = await db.get('SELECT COUNT(*) as c FROM files WHERE DATE(created_at) = ?', [dateStr]);
+      days.push({ day: dayLabel, date: dateStr, count: parseInt(cnt.c) });
     }
 
-    // By branch
     const byBranch = {};
-    ['chiptuning', 'immo', 'seedkey', 'special'].forEach(s => {
-      byBranch[s] = db.prepare('SELECT COUNT(*) as c FROM files WHERE service = ?').get(s).c;
-    });
+    for (const s of ['chiptuning','immo','seedkey','special']) {
+      const r = await db.get('SELECT COUNT(*) as c FROM files WHERE service = ?', [s]);
+      byBranch[s] = parseInt(r.c);
+    }
 
-    // Recent signups
-    const recentUsers = db.prepare('SELECT id, name, email, created_at FROM users ORDER BY created_at DESC LIMIT 5').all();
+    const recentUsers = await db.all('SELECT id, name, email, created_at FROM users ORDER BY created_at DESC LIMIT 5');
 
     res.json({
-      totalUsers, totalFiles, pendingFiles, usersToday, filesToday,
-      readyFiles, completedFiles, dailyActivity: days, byBranch, recentUsers
+      totalUsers: parseInt(totalUsers.c), totalFiles: parseInt(totalFiles.c),
+      pendingFiles: parseInt(pendingFiles.c), usersToday: parseInt(usersToday.c),
+      filesToday: parseInt(filesToday.c), readyFiles: parseInt(readyFiles.c),
+      completedFiles: parseInt(completedFiles.c), dailyActivity: days, byBranch, recentUsers
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al obtener estadísticas' });
-  }
+  } catch (err) { console.error(err); res.status(500).json({ error: err.message }); }
 });
 
-// ─── ALL FILES (admin) ───
-router.get('/files', (req, res) => {
+// ─── ALL FILES ───
+router.get('/files', async (req, res) => {
   try {
-    const files = db.prepare(`
+    const files = await db.all(`
       SELECT f.*, u.name as user_name, u.email as user_email
-      FROM files f
-      LEFT JOIN users u ON f.user_id = u.id
-      ORDER BY f.created_at DESC
-      LIMIT 200
-    `).all();
+      FROM files f LEFT JOIN users u ON f.user_id = u.id
+      ORDER BY f.created_at DESC LIMIT 200
+    `);
     res.json({ files });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al obtener archivos' });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ─── UPDATE FILE STATUS ───
-router.put('/files/:id/status', (req, res) => {
+router.put('/files/:id/status', async (req, res) => {
   const { status } = req.body;
-  const validStatuses = ['pending', 'processing', 'waiting', 'ready', 'completed'];
-  if (!validStatuses.includes(status)) return res.status(400).json({ error: 'Estado inválido' });
-
+  if (!['pending','processing','waiting','ready','completed'].includes(status)) return res.status(400).json({ error: 'Estado inválido' });
   try {
-    db.prepare('UPDATE files SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, req.params.id);
-
-    // Get file + user info to send notification
-    const file = db.prepare('SELECT f.*, u.email, u.name FROM files f LEFT JOIN users u ON f.user_id = u.id WHERE f.id = ?').get(req.params.id);
-
-    if (file && status === 'ready') {
-      // Create notification for user
-      db.prepare('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)').run(
-        file.user_id,
-        'file_ready',
-        '✅ Archivo listo para descargar',
-        `Tu archivo de ${file.service} para ${file.brand} ${file.model} está listo. Ingresá al portal para descargarlo.`
-      );
-      // Send email notification
-      if (file && file.email) {
-        const { subject, html } = fileReady(file.name || 'Cliente', { service: file.service, brand: file.brand, model: file.model, fileId: file.id, tunerNotes: file.tuner_notes });
-        sendEmail({ to: file.email, subject, html });
-        console.log(`📧 Email enviado a ${file.email}`);
+    await db.run('UPDATE files SET status = ?, updated_at = NOW() WHERE id = ?', [status, req.params.id]);
+    if (status === 'ready') {
+      const file = await db.get('SELECT f.*, u.email, u.name FROM files f LEFT JOIN users u ON f.user_id = u.id WHERE f.id = ?', [req.params.id]);
+      if (file) {
+        await db.run('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)',
+          [file.user_id, 'file_ready', '✅ Archivo listo', `Tu archivo de ${file.service} para ${file.brand} ${file.model} está listo.`]);
+        try {
+          const { subject, html } = fileReady(file.name||'Cliente', { service: file.service, brand: file.brand, model: file.model, fileId: file.id });
+          sendEmail({ to: file.email, subject, html });
+        } catch(e) {}
       }
     }
-
     res.json({ success: true, status });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al actualizar' });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── UPLOAD RESULT FILE ───
-router.put('/files/:id/result', (req, res) => {
-  const { result_filepath, tuner_notes } = req.body;
+// ─── DOWNLOAD ORIGINAL ───
+router.get('/files/:id/download-original', async (req, res) => {
   try {
-    db.prepare('UPDATE files SET result_filepath = ?, tuner_notes = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-      .run(result_filepath, tuner_notes || null, 'ready', req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Error' });
-  }
-});
-
-// ─── DOWNLOAD ORIGINAL FILE ───
-router.get('/files/:id/download-original', (req, res) => {
-  try {
-    const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
+    const file = await db.get('SELECT * FROM files WHERE id = ?', [req.params.id]);
     if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
-    if (!file.filepath) return res.status(404).json({ error: 'No hay archivo original' });
-    
-    const fs = require('fs');
+    if (!file.filepath) return res.status(404).json({ error: 'Sin archivo original' });
     if (!fs.existsSync(file.filepath)) return res.status(404).json({ error: 'Archivo no encontrado en disco' });
-    
-    const filename = file.filename || `original_${file.id}.bin`;
-    res.download(file.filepath, filename);
-  } catch (err) {
-    res.status(500).json({ error: 'Error al descargar' });
-  }
+    res.download(file.filepath, file.filename || `original_${file.id}.bin`);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── UPLOAD RESULT FILE (admin sube archivo procesado) ───
-router.post('/files/:id/upload-result', (req, res) => {
+// ─── UPLOAD RESULT ───
+router.post('/files/:id/upload-result', async (req, res) => {
   const multer = require('multer');
-  const path = require('path');
   const RESULTS_DIR = process.env.RESULTS_DIR || path.join(__dirname, '../results');
-  
+  if (!fs.existsSync(RESULTS_DIR)) fs.mkdirSync(RESULTS_DIR, { recursive: true });
   const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, RESULTS_DIR),
     filename: (req, file, cb) => cb(null, `result_${req.params.id}_${Date.now()}${path.extname(file.originalname)}`)
   });
   const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }).single('result');
-  
   upload(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'No se recibió archivo' });
-    
     try {
       const { tuner_notes } = req.body;
-      // Set 2-day expiry from now
       const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
-      db.prepare('UPDATE files SET result_filepath = ?, tuner_notes = ?, status = ?, download_count = 0, download_limit = 3, expires_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-        .run(req.file.path, tuner_notes || null, 'ready', expiresAt, req.params.id);
-      
-      // Notify user
-      const file = db.prepare('SELECT f.*, u.email, u.name FROM files f LEFT JOIN users u ON f.user_id = u.id WHERE f.id = ?').get(req.params.id);
+      await db.run('UPDATE files SET result_filepath=?, tuner_notes=?, status=?, download_count=0, download_limit=3, expires_at=?, updated_at=NOW() WHERE id=?',
+        [req.file.path, tuner_notes||null, 'ready', expiresAt, req.params.id]);
+      const file = await db.get('SELECT f.*, u.email, u.name FROM files f LEFT JOIN users u ON f.user_id = u.id WHERE f.id = ?', [req.params.id]);
       if (file) {
-        db.prepare('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)').run(
-          file.user_id, 'file_ready', '✅ Archivo listo para descargar',
-          `Tu archivo de ${file.service} para ${file.brand} ${file.model} está listo.`
-        );
-        // Send email
+        await db.run('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)',
+          [file.user_id, 'file_ready', '✅ Archivo listo para descargar', `Tu archivo de ${file.service} está listo.`]);
         try {
-          const { sendEmail, fileReady } = require('./email');
-          const { subject, html } = fileReady(file.name || 'Cliente', { 
-            service: file.service, brand: file.brand, model: file.model, 
-            fileId: file.id, tunerNotes: tuner_notes 
-          });
-          console.log(`📧 Enviando email a: ${file.email}`);
-          const emailResult = await sendEmail({ to: file.email, subject, html });
-          console.log(`📧 Resultado email:`, JSON.stringify(emailResult));
-        } catch(e) { console.error('Email error:', e.message, e.stack); }
+          const { subject, html } = fileReady(file.name||'Cliente', { service: file.service, brand: file.brand, model: file.model, fileId: file.id, tunerNotes: tuner_notes });
+          console.log(`📧 Enviando a ${file.email}`);
+          const r = await sendEmail({ to: file.email, subject, html });
+          console.log(`📧 Resultado:`, JSON.stringify(r));
+        } catch(e) { console.error('Email error:', e.message); }
       }
-      
-      res.json({ success: true, message: 'Archivo resultado subido y usuario notificado' });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
+      res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
   });
 });
 
 // ─── DELETE FILE ───
-router.delete('/files/:id', (req, res) => {
+router.delete('/files/:id', async (req, res) => {
   try {
-    db.prepare('DELETE FROM files WHERE id = ?').run(req.params.id);
+    await db.run('DELETE FROM files WHERE id = ?', [req.params.id]);
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al eliminar' });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ─── ALL USERS ───
-router.get('/users', (req, res) => {
+router.get('/users', async (req, res) => {
   try {
-    const users = db.prepare(`
-      SELECT u.*, (SELECT COUNT(*) FROM files WHERE user_id = u.id) as file_count
-      FROM users u
-      ORDER BY u.created_at DESC
-    `).all();
+    const users = await db.all('SELECT u.*, (SELECT COUNT(*) FROM files WHERE user_id = u.id) as file_count FROM users u ORDER BY u.created_at DESC');
     res.json({ users: users.map(u => ({ ...u, password: undefined })) });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al obtener usuarios' });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── UPDATE USER MEMBERSHIP ───
-router.put('/users/:id/membership', (req, res) => {
+router.put('/users/:id/membership', async (req, res) => {
   const { level } = req.body;
-  const valid = ['free', 'pro', 'enterprise'];
-  if (!valid.includes(level)) return res.status(400).json({ error: 'Plan inválido' });
-  try {
-    db.prepare('UPDATE users SET membership_level = ? WHERE id = ?').run(level, req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Error' });
-  }
+  if (!['free','pro','enterprise'].includes(level)) return res.status(400).json({ error: 'Plan inválido' });
+  try { await db.run('UPDATE users SET membership_level = ? WHERE id = ?', [level, req.params.id]); res.json({ success: true }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── DELETE USER ───
-router.delete('/users/:id', (req, res) => {
-  try {
-    // Don't allow deleting yourself
-    if (parseInt(req.params.id) === req.user.id) {
-      return res.status(400).json({ error: 'No podés eliminar tu propia cuenta' });
-    }
-    db.prepare('DELETE FROM notifications WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM usage_logs WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM email_verifications WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM files WHERE user_id = ?').run(req.params.id);
-    db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al eliminar usuario' });
-  }
-});
-
-// ─── UPDATE USER ROLE ───
-router.put('/users/:id/role', (req, res) => {
+router.put('/users/:id/role', async (req, res) => {
   const { role } = req.body;
   if (!['user','admin'].includes(role)) return res.status(400).json({ error: 'Rol inválido' });
-  try {
-    db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Error' });
-  }
+  try { await db.run('UPDATE users SET role = ? WHERE id = ?', [role, req.params.id]); res.json({ success: true }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── USAGE LOGS ───
-router.get('/logs', (req, res) => {
+router.delete('/users/:id', async (req, res) => {
   try {
-    const logs = db.prepare(`
-      SELECT l.*, u.email FROM usage_logs l
-      LEFT JOIN users u ON l.user_id = u.id
-      ORDER BY l.created_at DESC LIMIT 100
-    `).all();
+    if (parseInt(req.params.id) === req.user.id) return res.status(400).json({ error: 'No podés eliminar tu propia cuenta' });
+    await db.run('DELETE FROM notifications WHERE user_id = ?', [req.params.id]);
+    await db.run('DELETE FROM usage_logs WHERE user_id = ?', [req.params.id]);
+    await db.run('DELETE FROM email_verifications WHERE user_id = ?', [req.params.id]);
+    await db.run('DELETE FROM files WHERE user_id = ?', [req.params.id]);
+    await db.run('DELETE FROM users WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get('/logs', async (req, res) => {
+  try {
+    const logs = await db.all('SELECT l.*, u.email FROM usage_logs l LEFT JOIN users u ON l.user_id = u.id ORDER BY l.created_at DESC LIMIT 100');
     res.json({ logs });
-  } catch (err) {
-    res.status(500).json({ error: 'Error' });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 module.exports = router;
