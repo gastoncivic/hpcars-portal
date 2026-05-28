@@ -1,181 +1,116 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const db = require('../db');
+const { db } = require('../db');
 const { verifyToken } = require('./auth');
-const { sendEmail, fileReceived } = require('./email');
+const { sendEmail, fileReceived, fileReady } = require('./email');
 
 const router = express.Router();
-
-// Ensure uploads directory exists
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, '../uploads');
 const RESULTS_DIR = process.env.RESULTS_DIR || path.join(__dirname, '../results');
 [UPLOADS_DIR, RESULTS_DIR].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
 
 // ─── SUBMIT FILE ───
-router.post('/submit', verifyToken, (req, res) => {
-  // Note: requires multer middleware. Add to server.js:
-  // const multer = require('multer');
-  // const upload = multer({ dest: UPLOADS_DIR, limits: { fileSize: 50 * 1024 * 1024 } });
-  // app.use('/api/files', upload.single('file'), require('./routes/files'));
-
+router.post('/submit', verifyToken, async (req, res) => {
   const { service, brand, model, year, ecu, engine, description } = req.body;
   const file = req.file;
-
-  if (!service || !brand || !model) {
-    return res.status(400).json({ error: 'Faltan campos requeridos: service, brand, model' });
-  }
-
+  if (!service || !brand || !model) return res.status(400).json({ error: 'Faltan campos: service, brand, model' });
   try {
-    console.log(`📨 Submit: user=${req.user.id} service=${service} brand=${brand} model=${model} file=${file ? file.originalname : 'none'}`);
-
-    // Auto-recreate user if DB was reset (Render ephemeral storage)
-    const existingUser = db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
+    // Auto-restore user if needed
+    const existingUser = await db.get('SELECT id FROM users WHERE id = ?', [req.user.id]);
     if (!existingUser) {
-      const bcrypt = require('bcryptjs');
-      const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'angelgastoncalvo@gmail.com').split(',').map(e=>e.trim());
+      const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e=>e.trim());
       const role = ADMIN_EMAILS.includes(req.user.email) ? 'admin' : 'user';
-      const membership = role === 'admin' ? 'enterprise' : 'free';
-      try {
-        db.prepare('INSERT OR IGNORE INTO users (id, email, name, role, membership_level, email_verified, provider) VALUES (?,?,?,?,?,1,?)')
-          .run(req.user.id, req.user.email, req.user.email.split('@')[0], role, membership, 'jwt-restore');
-        console.log(`♻️ Usuario restaurado en DB: ${req.user.email}`);
-      } catch(e) {
-        console.error('Error restaurando usuario:', e.message);
-        return res.status(401).json({ error: 'Sesión expirada, volvé a iniciar sesión' });
-      }
+      await db.run('INSERT INTO users (id, email, name, role, membership_level, email_verified) VALUES (?,?,?,?,?,1) ON CONFLICT (id) DO NOTHING',
+        [req.user.id, req.user.email, req.user.email.split('@')[0], role, role==='admin'?'enterprise':'free']);
     }
 
-    const stmt = db.prepare(`
-      INSERT INTO files (user_id, service, filename, filepath, brand, model, year, ecu, engine, description, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    const result = stmt.run(
-      req.user.id,
-      service,
-      file ? file.originalname : null,
-      file ? file.path : null,
-      brand, model, year || null, ecu || null, engine || null,
-      description || null,
-      'pending'
+    const result = await db.run(
+      'INSERT INTO files (user_id, service, filename, filepath, brand, model, year, ecu, engine, description, status) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+      [req.user.id, service, file?.originalname||null, file?.path||null, brand, model, year||null, ecu||null, engine||null, description||null, 'pending']
     );
 
-    console.log(`✅ Archivo guardado en DB con id=${result.lastInsertRowid}`);
+    await db.run('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)',
+      [req.user.id, 'file_submitted', '📁 Archivo recibido', `Tu archivo de ${service} para ${brand} ${model} fue recibido.`]);
 
-    // Create notification for user
-    db.prepare('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)').run(
-      req.user.id, 'file_submitted', '📁 Archivo recibido',
-      `Tu archivo de ${service} para ${brand} ${model} fue recibido.`
-    );
-
-    // Send confirmation email (non-blocking)
     try {
-      const userRow = db.prepare('SELECT name, email FROM users WHERE id = ?').get(req.user.id);
-      if (userRow && userRow.email) {
+      const userRow = await db.get('SELECT name, email FROM users WHERE id = ?', [req.user.id]);
+      if (userRow?.email) {
         const { subject, html } = fileReceived(userRow.name, { service, brand, model, fileId: result.lastInsertRowid });
         sendEmail({ to: userRow.email, subject, html });
       }
-    } catch(emailErr) {
-      console.error('Email error (non-fatal):', emailErr.message);
-    }
+    } catch(e) { console.error('Email error:', e.message); }
 
-    res.json({
-      success: true,
-      id: result.lastInsertRowid,
-      message: 'Archivo recibido. Te notificaremos por email cuando esté listo.'
-    });
+    res.json({ success: true, id: result.lastInsertRowid, message: 'Archivo recibido.' });
   } catch (err) {
-    console.error('Submit error:', err.message, err.stack);
-    res.status(500).json({ error: 'Error al procesar el archivo: ' + err.message });
+    console.error('Submit error:', err);
+    res.status(500).json({ error: 'Error al procesar: ' + err.message });
   }
 });
 
 // ─── MY FILES ───
-router.get('/my', verifyToken, (req, res) => {
+router.get('/my', verifyToken, async (req, res) => {
   try {
-    const files = db.prepare(`
-      SELECT id, service, filename, brand, model, year, ecu, engine, description, status, payment_status, tuner_notes, created_at, updated_at
-      FROM files WHERE user_id = ?
-      ORDER BY created_at DESC
-    `).all(req.user.id);
-
+    const files = await db.all(
+      'SELECT id, service, filename, brand, model, year, ecu, engine, description, status, payment_status, tuner_notes, download_count, download_limit, expires_at, created_at, updated_at FROM files WHERE user_id = ? ORDER BY created_at DESC',
+      [req.user.id]
+    );
     res.json({ files });
-  } catch (err) {
-    res.status(500).json({ error: 'Error al obtener archivos' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Error al obtener archivos' }); }
 });
 
-// ─── SINGLE FILE STATUS ───
-router.get('/:id', verifyToken, (req, res) => {
+// ─── SINGLE FILE ───
+router.get('/:id', verifyToken, async (req, res) => {
   try {
-    const file = db.prepare('SELECT * FROM files WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
+    const file = await db.get('SELECT * FROM files WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
     res.json(file);
-  } catch (err) {
-    res.status(500).json({ error: 'Error del servidor' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Error del servidor' }); }
 });
 
 // ─── DOWNLOAD ───
-router.get('/download/:id', verifyToken, (req, res) => {
+router.get('/download/:id', verifyToken, async (req, res) => {
   try {
-    const file = db.prepare('SELECT * FROM files WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
+    const file = await db.get('SELECT * FROM files WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
     if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
     if (file.status === 'expired') return res.status(410).json({ error: 'El archivo expiró (2 días o 3 descargas)' });
-    if (file.status !== 'ready' && file.status !== 'completed') return res.status(403).json({ error: 'El archivo no está listo para descargar' });
-    if (!file.result_filepath || !fs.existsSync(file.result_filepath)) {
-      return res.status(404).json({ error: 'Archivo resultado no encontrado en el servidor' });
-    }
+    if (!['ready','completed'].includes(file.status)) return res.status(403).json({ error: 'El archivo no está listo' });
+    if (!file.result_filepath || !fs.existsSync(file.result_filepath)) return res.status(404).json({ error: 'Archivo no encontrado en disco' });
 
-    // Check expiry
     if (file.expires_at && new Date(file.expires_at) < new Date()) {
-      db.prepare("UPDATE files SET status = 'expired' WHERE id = ?").run(file.id);
+      await db.run("UPDATE files SET status = 'expired' WHERE id = ?", [file.id]);
       try { fs.unlinkSync(file.result_filepath); } catch(e) {}
-      return res.status(410).json({ error: 'El archivo expiró (límite de 2 días alcanzado)' });
+      return res.status(410).json({ error: 'El archivo expiró' });
     }
 
-    // Check download limit
     const newCount = (file.download_count || 0) + 1;
     const limit = file.download_limit || 3;
-    
+
+    await db.run('INSERT INTO usage_logs (user_id, action, details) VALUES (?,?,?)',
+      [req.user.id, 'download', JSON.stringify({ fileId: file.id, downloadNum: newCount })]);
+
     if (newCount >= limit) {
-      // Last download — mark expired after this one
-      db.prepare("UPDATE files SET download_count = ?, status = 'expired' WHERE id = ?").run(newCount, file.id);
-      // Send download then delete file
-      res.download(file.result_filepath, `hpcars_${file.service}_${file.brand}_${file.model}.bin`, (err) => {
-        if (!err) {
-          try { fs.unlinkSync(file.result_filepath); } catch(e) {}
-        }
+      await db.run("UPDATE files SET download_count = ?, status = 'expired' WHERE id = ?", [newCount, file.id]);
+      res.download(file.result_filepath, `hpcars_${file.service}_${file.brand}_${file.model}.bin`, () => {
+        try { fs.unlinkSync(file.result_filepath); } catch(e) {}
       });
     } else {
-      db.prepare('UPDATE files SET download_count = ? WHERE id = ?').run(newCount, file.id);
+      await db.run('UPDATE files SET download_count = ? WHERE id = ?', [newCount, file.id]);
       res.download(file.result_filepath, `hpcars_${file.service}_${file.brand}_${file.model}.bin`);
     }
-
-    // Log download
-    db.prepare('INSERT INTO usage_logs (user_id, action, details) VALUES (?,?,?)').run(
-      req.user.id, 'download', JSON.stringify({ fileId: file.id, service: file.service, downloadNum: newCount, limit })
-    );
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al descargar' });
-  }
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Error al descargar' }); }
 });
 
 // ─── NOTIFICATIONS ───
-router.get('/notifications/my', verifyToken, (req, res) => {
+router.get('/notifications/my', verifyToken, async (req, res) => {
   try {
-    const notifs = db.prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 20').all(req.user.id);
+    const notifs = await db.all('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 20', [req.user.id]);
     res.json({ notifications: notifs });
-  } catch {
-    res.status(500).json({ error: 'Error' });
-  }
+  } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-router.put('/notifications/:id/read', verifyToken, (req, res) => {
-  db.prepare('UPDATE notifications SET read = 1 WHERE id = ? AND user_id = ?').run(req.params.id, req.user.id);
+router.put('/notifications/:id/read', verifyToken, async (req, res) => {
+  await db.run('UPDATE notifications SET read = 1 WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
   res.json({ success: true });
 });
 
