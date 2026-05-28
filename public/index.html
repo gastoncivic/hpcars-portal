@@ -3,510 +3,424 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HP CARS — Portal de Chiptuning Profesional</title>
-<meta name="description" content="Portal profesional de chiptuning: Chiptuning, IMMO OFF, Seed Key y Soluciones Especiales para tu vehículo."/>
+<title>HP CARS — Soluciones ECU Profesionales</title>
+<meta name="description" content="Chiptuning, IMMO OFF, Seed Key y Soluciones Especiales para tu ECU. Más de 12.000 archivos procesados."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f1623;
-  --bg2:#162032;
-  --bg3:#1c2940;
-  --red:#e8321a;
-  --red2:#f04830;
-  --accent:#3b82f6;
-  --accent2:#60a5fa;
-  --amber:#f59e0b;
+  --bg:#09090b;
+  --bg2:#111113;
+  --bg3:#18181b;
+  --border:#27272a;
+  --border2:#3f3f46;
+  --text:#fafafa;
+  --muted:#a1a1aa;
+  --muted2:#71717a;
+  --accent:#f97316;
+  --accent2:#fb923c;
   --blue:#3b82f6;
   --green:#22c55e;
-  --text:#e2e8f5;
-  --muted:#7e95b5;
-  --border:#1e3050;
-  --glass:rgba(255,255,255,0.04);
-  --glass2:rgba(255,255,255,0.07);
+  --red:#ef4444;
+  --glass:rgba(255,255,255,.03);
+  --glass2:rgba(255,255,255,.06);
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#0d0f1a}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+/* ── NOISE TEXTURE ── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");opacity:.4;pointer-events:none;z-index:0}
 
-/* BG GRID */
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(59,130,246,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+/* ── HEADER ── */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,9,11,.85);backdrop-filter:blur(24px)}
+.logo{display:flex;align-items:center;gap:.625rem;text-decoration:none}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{display:block}
+.logo-name{font-size:.95rem;font-weight:700;color:var(--text);letter-spacing:.5px}
+.logo-name span{color:var(--muted2)}
+.logo-tag{background:var(--bg3);border:1px solid var(--border2);color:var(--muted);font-size:.6rem;font-weight:600;padding:1px 7px;border-radius:20px;letter-spacing:.5px}
+nav{display:flex;align-items:center;gap:2rem}
+nav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s}
+nav a:hover{color:var(--text)}
+.hdr-right{display:flex;align-items:center;gap:.5rem}
+.lang-wrap{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.lang-btn{background:none;border:none;color:var(--muted2);padding:4px 10px;cursor:pointer;font-size:.75rem;font-weight:600;transition:.15s;font-family:'Inter',sans-serif}
+.lang-btn.active{background:var(--border2);color:var(--text)}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:7px;cursor:pointer;font-size:.85rem;font-family:'Inter',sans-serif;transition:.2s}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-solid{background:var(--accent);border:none;color:#fff;padding:7px 18px;border-radius:7px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:'Inter',sans-serif;transition:.2s}
+.btn-solid:hover{background:var(--accent2)}
 
-/* ─── HEADER ─── */
-header{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,8,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;letter-spacing:1px;text-decoration:none;display:flex;align-items:center;gap:.5rem}
-.logo span{color:var(--red)}
-.logo-badge{background:var(--accent);color:#fff;font-size:.6rem;font-family:'Inter',sans-serif;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px;margin-left:4px}
-nav{display:flex;align-items:center;gap:1.5rem}
-nav a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:.2s;letter-spacing:.5px}
-nav a:hover{color:var(--accent)}
-.lang-btn{background:var(--glass);border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:.8rem;font-weight:600;transition:.2s;letter-spacing:1px}
-.lang-btn:hover,.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.header-actions{display:flex;align-items:center;gap:.75rem}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 20px;border-radius:6px;cursor:pointer;font-size:.9rem;transition:.2s;font-family:'Barlow',sans-serif}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
-.btn-primary{background:var(--red);border:none;color:#fff;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.2s;font-family:'Barlow',sans-serif}
-.btn-primary:hover{background:var(--red2);transform:translateY(-1px)}
+/* ── HERO ── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 45%;opacity:.35;filter:saturate(.9)}
+.hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(110deg,rgba(9,9,11,1) 0%,rgba(9,9,11,.95) 35%,rgba(9,9,11,.55) 65%,rgba(9,9,11,.75) 100%)}
+.hero-bg-glow{position:absolute;top:30%;right:20%;width:500px;height:500px;background:radial-gradient(circle,rgba(249,115,22,.08) 0%,transparent 70%);pointer-events:none}
 
-/* ─── HERO IMAGE ─── */
-.hero-img-wrap{position:absolute;inset:0;overflow:hidden;z-index:0}
-.hero-img{width:100%;height:100%;object-fit:cover;object-position:center 40%;opacity:.55;filter:saturate(1.1) contrast(1.05)}
-.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(100deg,rgba(10,14,24,1) 0%,rgba(10,14,24,.95) 30%,rgba(10,14,24,.6) 55%,rgba(10,14,24,.1) 75%,rgba(10,14,24,.4) 100%)}
+.hero-content{position:relative;z-index:1;padding:120px 6vw 80px;max-width:680px}
+.hero-pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.25);color:var(--accent);padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:.3px;margin-bottom:2rem}
+.hero-pill::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:livepulse 2s infinite}
+@keyframes livepulse{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.5)}60%{box-shadow:0 0 0 6px rgba(249,115,22,0)}}
+h1.hero-title{font-size:clamp(2.4rem,5vw,4rem);font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:1.25rem;color:var(--text)}
+h1.hero-title em{color:var(--accent);font-style:normal}
+.hero-desc{font-size:1.05rem;color:var(--muted);line-height:1.7;max-width:480px;margin-bottom:2.5rem;font-weight:400}
+.hero-btns{display:flex;gap:.875rem;flex-wrap:wrap;margin-bottom:3.5rem}
+.hero-btn-main{background:var(--accent);color:#fff;border:none;padding:12px 28px;border-radius:9px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;display:flex;align-items:center;gap:.5rem}
+.hero-btn-main:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,.35)}
+.hero-btn-sec{background:var(--glass2);color:var(--text);border:1px solid var(--border2);padding:12px 28px;border-radius:9px;font-size:.95rem;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
+.hero-btn-sec:hover{background:var(--glass2);border-color:var(--border2);transform:translateY(-1px)}
 
-/* SCAN LINE EFFECT */
-.hero-scan-line{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,130,246,.015) 2px,rgba(59,130,246,.015) 4px);pointer-events:none;z-index:1}
+/* STATS */
+.hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap;padding-top:2rem;border-top:1px solid var(--border)}
+.hero-stat{}
+.hs-val{font-size:1.75rem;font-weight:800;color:var(--text);line-height:1}
+.hs-val span{color:var(--accent)}
+.hs-lbl{font-size:.75rem;color:var(--muted2);margin-top:.2rem;font-weight:500}
 
-/* FLOATING PARTICLES */
-.hero-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
-.particle{position:absolute;border-radius:50%;animation:float linear infinite}
-.p1{width:3px;height:3px;background:var(--accent);opacity:.6;top:20%;left:15%;animation-duration:8s;animation-delay:0s}
-.p2{width:2px;height:2px;background:#60a5fa;opacity:.5;top:60%;left:75%;animation-duration:12s;animation-delay:-3s}
-.p3{width:4px;height:4px;background:var(--accent);opacity:.3;top:40%;left:85%;animation-duration:10s;animation-delay:-5s}
-.p4{width:2px;height:2px;background:#93c5fd;opacity:.7;top:75%;left:30%;animation-duration:9s;animation-delay:-2s}
-.p5{width:3px;height:3px;background:var(--accent);opacity:.4;top:30%;left:55%;animation-duration:14s;animation-delay:-7s}
-@keyframes float{0%{transform:translateY(0px) translateX(0px);opacity:0}10%{opacity:.7}90%{opacity:.7}100%{transform:translateY(-120px) translateX(20px);opacity:0}}
+/* MARQUEE BAR */
+.marquee-bar{background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:.625rem 0;overflow:hidden;position:relative;z-index:1}
+.marquee-track{display:flex;gap:3rem;animation:marquee 25s linear infinite;white-space:nowrap}
+.marquee-item{color:var(--muted2);font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
+.marquee-dot{color:var(--accent);margin-right:3rem}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-/* GLOWING LINE AT BOTTOM OF HERO */
-.hero::after{content:'HONDA · BMW · VOLKSWAGEN · TOYOTA · FORD · CHEVROLET · AUDI · MERCEDES';position:absolute;bottom:0;left:0;right:0;height:36px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.2);background:rgba(0,0,0,.4);border-top:1px solid rgba(59,130,246,.15);z-index:3;overflow:hidden;white-space:nowrap}
+/* ── SECTIONS ── */
+section{position:relative;z-index:1}
+.section-label{font-size:.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.section-title{font-size:clamp(1.6rem,3vw,2.25rem);font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-bottom:.75rem}
+.section-sub{color:var(--muted);font-size:.975rem;max-width:520px;line-height:1.65}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.py{padding:5rem 0}
 
-/* ─── HERO DATA PANEL ─── */
-.hero-data-panel{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:.75rem;opacity:.35;pointer-events:none}
-.hero-data-panel::before{content:'ECU > 0x1A4F\A ADDR > 0x8000\A BOOT > OK\A CRC > VALID\A MAP > LOADED';white-space:pre;font-family:monospace;font-size:.7rem;color:#60a5fa;line-height:1.8;background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.15);border-radius:8px;padding:.75rem 1rem;display:block}
-@media(max-width:900px){.hero-data-panel{display:none}}
+/* ── SERVICES ── */
+.services{background:var(--bg)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:3rem}
+.svc-card{background:var(--bg2);padding:2rem;cursor:pointer;transition:.25s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.875rem}
+.svc-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--card-glow),transparent);opacity:0;transition:.25s}
+.svc-card:hover{background:var(--bg3)}
+.svc-card:hover::after{opacity:1}
+.svc-card[data-s="chip"]{--card-glow:rgba(239,68,68,.04)}
+.svc-card[data-s="immo"]{--card-glow:rgba(245,158,11,.04)}
+.svc-card[data-s="seed"]{--card-glow:rgba(59,130,246,.04)}
+.svc-card[data-s="special"]{--card-glow:rgba(34,197,94,.04)}
+.svc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.svc-icon.red{background:rgba(239,68,68,.12)}
+.svc-icon.amber{background:rgba(245,158,11,.12)}
+.svc-icon.blue{background:rgba(59,130,246,.12)}
+.svc-icon.green{background:rgba(34,197,94,.12)}
+.svc-name{font-size:1.05rem;font-weight:700;letter-spacing:-.2px}
+.svc-desc{font-size:.855rem;color:var(--muted);line-height:1.55;flex:1}
+.svc-tags{display:flex;flex-wrap:wrap;gap:.375rem}
+.svc-tag{background:var(--bg);border:1px solid var(--border);color:var(--muted2);font-size:.7rem;padding:2px 8px;border-radius:4px;font-weight:500}
+.svc-badge{display:inline-flex;align-items:center;font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px;align-self:flex-start}
+.badge-auto{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.badge-manual{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)}
+.svc-arrow{color:var(--muted2);font-size:.85rem;margin-top:.25rem;transition:.2s}
+.svc-card:hover .svc-arrow{color:var(--accent);transform:translateX(4px)}
 
-/* ─── HERO ─── */
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:flex-start;text-align:left;padding:0 0 0 0;z-index:1;overflow:hidden}
-.hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%);pointer-events:none}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--accent);padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;letter-spacing:1px;margin-bottom:1.5rem;font-family:'Barlow Condensed',sans-serif}
-.hero-badge::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse-dot 2s infinite;flex-shrink:0}
-@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.6)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-bottom:1.5rem}
-h1 .highlight{color:var(--accent);display:inline}
-h1 span{display:block}
-.hero-sub{font-size:1.05rem;color:var(--muted);max-width:480px;margin:0 0 1rem;font-weight:400;line-height:1.7}
-.hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
-.cta-main{background:var(--accent);color:#fff;border:none;padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.2px;transition:.2s;display:flex;align-items:center;gap:.5rem}
-.cta-main:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.4)}
-.cta-sec{background:transparent;color:var(--text);border:1px solid var(--border);padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s}
-.cta-sec:hover{border-color:var(--accent);color:var(--accent)}
-
-/* STATS BAR */
-.stats-bar{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;padding-top:2rem;border-top:1px solid var(--border)}
-.stat{text-align:center}
-.stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.8rem;font-weight:800;color:#fff;display:block}
-.stat-num span{color:var(--accent)}
-.stat-label{font-size:.8rem;color:var(--muted);letter-spacing:.5px}
-
-/* ─── SECTIONS COMMON ─── */
-section{position:relative;z-index:1;padding:5rem 2rem}
-.container{max-width:1100px;margin:0 auto}
-.section-tag{display:inline-block;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;margin-bottom:.75rem;background:rgba(59,130,246,.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(59,130,246,.2)}
-.section-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;line-height:1.2;margin-bottom:.75rem}
-.section-sub{color:var(--muted);max-width:560px;font-size:1rem}
-
-/* ─── BRANCHES ─── */
-.branches{background:var(--bg2)}
-.branches-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:3rem}
-.branch-card{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:1.75rem;cursor:pointer;transition:.3s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.875rem}
-.branch-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:var(--accent)}
-.branch-card:hover{background:var(--glass2);transform:translateY(-6px);border-color:var(--accent);box-shadow:0 12px 40px rgba(59,130,246,.15)}
-.branch-card[data-branch="chiptuning"]{--accent:#e8321a}
-.branch-card[data-branch="immo"]{--accent:var(--amber)}
-.branch-card[data-branch="seedkey"]{--accent:var(--blue)}
-.branch-card[data-branch="special"]{--accent:var(--green)}
-.branch-icon{font-size:2.5rem;display:flex;width:56px;height:56px;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border-radius:12px}
-.branch-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:0}
-.branch-desc{color:var(--muted);font-size:.9rem;line-height:1.5;flex:1}
-.branch-tags{display:flex;flex-wrap:wrap;gap:.4rem}
-.branch-tag{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);font-size:.72rem;padding:3px 8px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
-.branch-cta{display:flex;align-items:center;gap:.5rem;color:var(--accent);font-size:.85rem;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;margin-top:.5rem}
-.branch-badge{position:absolute;top:1.25rem;right:1.25rem;font-size:.65rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase}
-.badge-auto{background:rgba(46,213,115,.15);color:var(--green);border:1px solid rgba(46,213,115,.3)}
-.badge-manual{background:rgba(245,166,35,.15);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
-
-/* ─── HOW IT WORKS ─── */
-.how{background:var(--bg)}
-.how-cols{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem}
-@media(max-width:700px){.how-cols{grid-template-columns:1fr}}
-.how-col-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
-.how-col-title .dot{width:10px;height:10px;border-radius:50%}
+/* ── HOW ── */
+.how{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-cols{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-top:3rem}
+.how-col-head{font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.how-col-head::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--col-color)}
+.col-a{--col-color:var(--green)}.col-m{--col-color:#f59e0b}
 .step{display:flex;gap:1rem;margin-bottom:1.5rem;position:relative}
-.step::after{content:'';position:absolute;left:18px;top:44px;bottom:-8px;width:1px;background:var(--border)}
+.step::after{content:'';position:absolute;left:15px;top:38px;bottom:-8px;width:1px;background:var(--border)}
 .step:last-child::after{display:none}
-.step-num{width:36px;height:36px;min-width:36px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;color:var(--muted);background:var(--bg2)}
-.step.active .step-num{border-color:var(--accent2);color:var(--accent2)}
-.step-info h4{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.2rem}
-.step-info p{font-size:.85rem;color:var(--muted);line-height:1.4}
-.col-auto{--accent:var(--green)}
-.col-manual{--accent:var(--amber)}
+.step-n{width:30px;height:30px;min-width:30px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--muted2)}
+.step.on .step-n{border-color:var(--col-color);color:var(--col-color);background:rgba(255,255,255,.03)}
+.step-body h4{font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+.step-body p{font-size:.82rem;color:var(--muted);line-height:1.5}
 
-/* ─── PLANS ─── */
-.plans{background:var(--bg2)}
-.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3rem}
-.plan-card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;transition:.3s}
-.plan-card.featured{border-color:var(--accent);background:rgba(59,130,246,.06)}
-.plan-card.featured::before{content:'MÁS POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;padding:4px 14px;border-radius:20px}
-.plan-name{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase}
-.plan-price{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.2rem;font-weight:800;margin-bottom:.25rem}
-.plan-price small{font-size:1rem;color:var(--muted);font-weight:400}
-.plan-period{font-size:.8rem;color:var(--muted);margin-bottom:1.5rem}
-.plan-features{list-style:none;margin-bottom:2rem}
-.plan-features li{padding:.4rem 0;font-size:.9rem;color:var(--muted);display:flex;gap:.5rem}
-.plan-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
-.plan-features li.no::before{content:'✗';color:var(--border)}
-.plan-features li.no{opacity:.5}
-.plan-btn{width:100%;padding:12px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:.2s;border:1px solid var(--border);background:transparent;color:var(--text)}
-.plan-btn:hover,.plan-card.featured .plan-btn{background:var(--accent);border-color:var(--accent);color:#fff}
-.paddle-note{text-align:center;margin-top:1.5rem;color:var(--muted);font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
+/* ── PLANS ── */
+.plans{background:var(--bg)}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:3rem}
+.plan{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.75rem;position:relative;transition:.2s}
+.plan:hover{border-color:var(--border2)}
+.plan.pop{border-color:var(--accent)}
+.plan-pop-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.5px;white-space:nowrap}
+.plan-name{font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:.75rem}
+.plan-price{font-size:2.5rem;font-weight:800;letter-spacing:-1px;margin-bottom:.25rem}
+.plan-period{font-size:.8rem;color:var(--muted2);margin-bottom:1.5rem}
+.plan-feats{list-style:none;margin-bottom:1.75rem}
+.plan-feats li{font-size:.875rem;color:var(--muted);padding:.375rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.plan-feats li:last-child{border:none}
+.plan-feats li::before{content:'✓';color:var(--green);font-weight:700;font-size:.8rem;flex-shrink:0}
+.plan-feats li.no{opacity:.45}
+.plan-feats li.no::before{content:'—';color:var(--muted2)}
+.plan-btn{width:100%;padding:10px;border-radius:8px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:.2s;border:1px solid var(--border);background:var(--glass);color:var(--text)}
+.plan.pop .plan-btn,.plan-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* ─── TRUST ─── */
-.trust{background:var(--bg);border-top:1px solid var(--border)}
-.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.5rem;margin-top:3rem}
-.trust-item{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1rem;text-align:center;transition:.2s}
-.trust-item:hover{background:var(--glass2);border-color:var(--accent)}
-.trust-icon{font-size:1.8rem;margin-bottom:.75rem;display:block}
-.trust-item h4{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.3rem}
+/* ── TRUST ── */
+.trust{background:var(--bg2);border-top:1px solid var(--border)}
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:3rem}
+.trust-item{background:var(--bg2);padding:1.5rem 1.25rem;text-align:center;transition:.2s}
+.trust-item:hover{background:var(--bg3)}
+.trust-icon{font-size:1.6rem;margin-bottom:.625rem;display:block}
+.trust-item h4{font-size:.875rem;font-weight:600;margin-bottom:.3rem}
 .trust-item p{font-size:.78rem;color:var(--muted);line-height:1.4}
+.brand-bar{display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border)}
+.brand-item{color:var(--muted2);font-size:.72rem;font-weight:700;letter-spacing:1px;opacity:.5;transition:.2s}
+.brand-item:hover{opacity:1;color:var(--muted)}
 
-/* TRUST LOGOS BAR */
-.trust-logos{display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)}
-.trust-logo-item{display:flex;align-items:center;gap:.5rem;color:var(--muted);font-size:.8rem;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;opacity:.6;transition:.2s}
-.trust-logo-item:hover{opacity:1;color:var(--text)}
-.trust-logo-item span{font-size:1.2rem}
+/* ── FOOTER ── */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem 2rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;max-width:1100px;margin:0 auto}
+.footer-brand-name{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.625rem;display:flex;align-items:center;gap:.5rem}
+.footer-desc{font-size:.82rem;color:var(--muted2);line-height:1.65;max-width:220px}
+.footer-col h5{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-bottom:1rem}
+.footer-col a{display:block;font-size:.82rem;color:var(--muted2);text-decoration:none;margin-bottom:.5rem;transition:.15s}
+.footer-col a:hover{color:var(--text)}
+.footer-btm{max-width:1100px;margin:2rem auto 0;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.footer-btm p{font-size:.78rem;color:var(--muted2)}
+.ssl-pill{display:flex;align-items:center;gap:.375rem;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:var(--green);font-size:.72rem;font-weight:600;padding:4px 12px;border-radius:20px}
 
-/* ─── FOOTER ─── */
-footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2rem 2rem;position:relative;z-index:1}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;max-width:1100px;margin:0 auto}
-@media(max-width:700px){.footer-grid{grid-template-columns:1fr 1fr}}
-.footer-brand{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
-.footer-brand span{color:var(--red)}
-.footer-desc{font-size:.85rem;color:var(--muted);line-height:1.6;max-width:240px}
-.footer-col h5{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:1rem;text-transform:uppercase}
-.footer-col a{display:block;color:var(--muted);font-size:.85rem;text-decoration:none;margin-bottom:.5rem;transition:.2s}
-.footer-col a:hover{color:var(--accent)}
-.footer-bottom{max-width:1100px;margin:2rem auto 0;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
-.footer-bottom p{font-size:.8rem;color:var(--muted)}
-.ssl-badge{display:flex;align-items:center;gap:.5rem;background:rgba(46,213,115,.08);border:1px solid rgba(46,213,115,.2);color:var(--green);font-size:.75rem;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:5px 12px;border-radius:20px}
-
-/* ─── MODALS ─── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem}
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:1rem}
 .overlay.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:460px;overflow:hidden;animation:slideUp .3s ease}
-@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-header{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.modal-header h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700}
-.modal-close{background:var(--glass);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;transition:.2s;display:flex;align-items:center;justify-content:center}
-.modal-close:hover{background:var(--accent);color:#fff}
-.modal-body{padding:1.75rem}
-.social-btns{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
-.social-btn{display:flex;align-items:center;gap.75rem;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:var(--glass);color:var(--text);font-size:.95rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Barlow',sans-serif;gap:.75rem}
-.social-btn:hover{background:var(--glass2);border-color:rgba(255,255,255,.15)}
-.google-btn:hover{background:#fff;border-color:#dadce0;color:#3c4043}
-.google-btn:hover svg path{opacity:1}
-.social-btn img{width:20px;height:20px;border-radius:4px}
-.divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--muted);font-size:.8rem}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:440px;overflow:hidden;animation:modalIn .25s cubic-bezier(.34,1.4,.64,1)}
+@keyframes modalIn{from{transform:scale(.93) translateY(16px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-hdr{padding:1.375rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-hdr h3{font-size:1.1rem;font-weight:700;letter-spacing:-.2px}
+.modal-x{background:var(--bg3);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.modal-x:hover{background:var(--border);color:var(--text)}
+.modal-bdy{padding:1.5rem}
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:.75rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:11px 16px;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:500;transition:.2s;font-family:'Inter',sans-serif;margin-bottom:1.25rem}
+.google-btn:hover{background:var(--border);border-color:var(--border2)}
+.divider{display:flex;align-items:center;gap:.875rem;color:var(--muted2);font-size:.78rem;margin-bottom:1.25rem}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.form-group{margin-bottom:1rem}
-.form-group label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;color:var(--text)}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.95rem;outline:none;transition:.2s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
-.form-group textarea{min-height:80px;resize:vertical}
-.form-group select option{background:var(--bg2)}
-.modal-btn{width:100%;background:var(--accent);border:none;color:#fff;padding:13px;border-radius:12px;font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:.2s;margin-top:.5rem}
+.fg{margin-bottom:.875rem}
+.fg label{display:block;font-size:.8rem;font-weight:500;color:var(--muted);margin-bottom:.35rem}
+.fg input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:.2s}
+.fg input:focus{border-color:var(--accent)}
+.modal-btn{width:100%;background:var(--accent);border:none;color:#fff;padding:11px;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:.2s;margin-top:.25rem}
 .modal-btn:hover{background:var(--accent2)}
-.modal-btn:disabled{opacity:.5;cursor:not-allowed}
-.modal-foot{text-align:center;margin-top:1.25rem;font-size:.85rem;color:var(--muted)}
-.modal-foot a,.modal-foot button{color:var(--accent);text-decoration:none;font-weight:600;background:none;border:none;cursor:pointer;font-size:.85rem}
-.verify-box{background:rgba(43,125,233,.08);border:1px solid rgba(43,125,233,.25);border-radius:10px;padding:1.25rem;text-align:center;margin-top:.5rem}
+.modal-foot{text-align:center;margin-top:1rem;font-size:.82rem;color:var(--muted2)}
+.modal-foot button{color:var(--accent);font-weight:600;background:none;border:none;cursor:pointer;font-size:.82rem;font-family:'Inter',sans-serif}
+.verify-box{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:1.5rem;text-align:center}
 .verify-box .vi{font-size:2.5rem;margin-bottom:.5rem}
-.verify-box h4{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.4rem}
-.verify-box p{font-size:.85rem;color:var(--muted)}
+.verify-box h4{font-size:1rem;font-weight:700;margin-bottom:.375rem}
+.verify-box p{font-size:.82rem;color:var(--muted)}
 
-/* ─── UPLOAD MODAL ─── */
-.upload-modal{max-width:540px}
-.dropzone{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:.2s;margin-bottom:1.25rem}
-.dropzone:hover,.dropzone.drag-over{border-color:var(--accent);background:rgba(59,130,246,.04)}
-.dropzone .dz-icon{font-size:2.5rem;margin-bottom:.5rem}
-.dropzone p{font-size:.9rem;color:var(--muted)}
-.dropzone p strong{color:var(--text)}
-.dropzone input[type=file]{display:none}
-.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem}
-.service-opt{border:1px solid var(--border);border-radius:8px;padding:.75rem;cursor:pointer;transition:.2s;text-align:center}
-.service-opt:hover,.service-opt.selected{border-color:var(--accent);background:rgba(59,130,246,.08)}
-.service-opt .so-icon{font-size:1.4rem;margin-bottom:.25rem}
-.service-opt .so-name{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700}
-.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:1rem}
-.progress-fill{height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .3s}
+/* ── UPLOAD MODAL ── */
+.svc-sel{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:1.25rem}
+.svc-opt{border:1px solid var(--border);border-radius:8px;padding:.625rem;cursor:pointer;text-align:center;transition:.2s;background:var(--bg3)}
+.svc-opt:hover,.svc-opt.sel{border-color:var(--accent);background:rgba(249,115,22,.06)}
+.svc-opt-icon{font-size:1.3rem}.svc-opt-name{font-size:.78rem;font-weight:600;margin-top:.2rem}
+.dropz{border:1.5px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;margin-bottom:1.25rem}
+.dropz:hover{border-color:var(--accent);background:rgba(249,115,22,.03)}
+.dropz input{display:none}
+.dropz p{font-size:.83rem;color:var(--muted)}
+.dropz strong{color:var(--text)}
+.prog{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:.875rem}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .3s}
 
-/* TOAST */
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.5rem;font-size:.9rem;z-index:9999;max-width:320px;display:flex;gap:.75rem;align-items:center;transform:translateX(110%);transition:.3s;border-left:3px solid var(--green)}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:.875rem 1.25rem;font-size:.875rem;z-index:9999;max-width:300px;display:flex;gap:.625rem;align-items:center;transform:translateX(120%);transition:transform .3s cubic-bezier(.34,1.4,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.4)}
 .toast.show{transform:translateX(0)}
-.toast.err{border-left-color:var(--red)}
+.toast-ok{border-left:3px solid var(--green)}.toast-err{border-left:3px solid var(--red)}.toast-info{border-left:3px solid var(--blue)}
 
-/* VERIFIED BANNER */
-.verified-banner{display:none;background:rgba(46,213,115,.08);border:1px solid rgba(46,213,115,.25);color:var(--green);padding:.75rem 1.5rem;text-align:center;font-size:.9rem;font-weight:600;position:fixed;top:70px;left:0;right:0;z-index:900}
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
 
-/* ─── TABLET ─── */
-@media(max-width:1024px){
-  .hero-left{padding:120px 2rem 60px 2rem;max-width:100%}
-  .hero::after{font-size:.55rem;letter-spacing:2px}
-}
-
-/* ─── MOBILE ─── */
-@media(max-width:900px){
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
   nav{display:none}
   .footer-grid{grid-template-columns:1fr 1fr}
-  
-  /* Hero - stack vertically on mobile */
-  .hero{align-items:center;text-align:center}
-  .hero-left{padding:100px 1.5rem 60px;max-width:100%}
-  .hero-img{object-position:60% 40%}
-  .hero-img-overlay{background:linear-gradient(180deg,rgba(10,14,24,.88) 0%,rgba(10,14,24,.7) 40%,rgba(10,14,24,.85) 100%)}
-  .hero-ctas{justify-content:center !important}
-  .stats-bar{justify-content:center !important}
-  .hero-sub{margin:0 auto 1rem !important}
-  h1{font-size:clamp(1.9rem,7vw,3rem)}
-  .hero-data-panel{display:none}
-  .hero-scan-line{display:none}
-  
-  /* Header */
-  .header-actions .btn-outline{display:none}
+  .how-cols{grid-template-columns:1fr;gap:2rem}
 }
-
-@media(max-width:600px){
-  .branches-grid,.plans-grid{grid-template-columns:1fr}
-  .hero-ctas{flex-direction:column;align-items:center;width:100%}
-  .hero-ctas button{width:100%;justify-content:center}
-  .stats-bar{gap:1.25rem;flex-wrap:wrap}
-  .stat-num{font-size:1.5rem}
-  .how-cols{grid-template-columns:1fr}
-  .trust-grid{grid-template-columns:1fr 1fr}
+@media(max-width:640px){
+  .hero-content{padding:100px 1.5rem 60px}
+  h1.hero-title{font-size:2.1rem}
+  .hero-btns{flex-direction:column}
+  .hero-btn-main,.hero-btn-sec{width:100%;justify-content:center}
+  .hero-stats{gap:1.5rem}
+  .services-grid,.plans-grid,.trust-grid{grid-template-columns:1fr}
+  .svc-sel{grid-template-columns:1fr 1fr}
   .footer-grid{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;text-align:center}
-  .two-col{grid-template-columns:1fr}
-  .header-actions .lang-btn{padding:3px 8px;font-size:.7rem}
-  .logo-badge{display:none}
+  .footer-btm{flex-direction:column;text-align:center}
+  .hdr-right .btn-ghost{display:none}
 }
-
-/* ═══════════════════════════════════
-   SPECIAL EFFECTS
-   ═══════════════════════════════════ */
-
-/* 1. ANIMATED GRID BACKGROUND */
-body::before{content:'';position:fixed;inset:0;
-  background-image:linear-gradient(rgba(59,130,246,.06) 1px,transparent 1px),
-                   linear-gradient(90deg,rgba(59,130,246,.06) 1px,transparent 1px);
-  background-size:50px 50px;
-  animation:gridMove 20s linear infinite;pointer-events:none;z-index:0}
-@keyframes gridMove{0%{background-position:0 0}100%{background-position:50px 50px}}
-
-/* 2. GLOW PULSE ON HERO BADGE */
-.hero-badge{animation:badgePulse 3s ease-in-out infinite}
-@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.3)}50%{box-shadow:0 0 20px 4px rgba(59,130,246,.2)}}
-
-/* 3. TYPEWRITER CURSOR ON H1 */
-.highlight::after{content:'|';color:var(--accent);animation:blink-cursor .8s step-end infinite;margin-left:2px}
-@keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
-
-/* 4. BRANCH CARDS - GLOW ON HOVER */
-.branch-card[data-branch="chiptuning"]:hover{box-shadow:0 0 30px rgba(232,50,26,.25),0 12px 40px rgba(0,0,0,.3)}
-.branch-card[data-branch="immo"]:hover{box-shadow:0 0 30px rgba(245,158,11,.2),0 12px 40px rgba(0,0,0,.3)}
-.branch-card[data-branch="seedkey"]:hover{box-shadow:0 0 30px rgba(59,130,246,.25),0 12px 40px rgba(0,0,0,.3)}
-.branch-card[data-branch="special"]:hover{box-shadow:0 0 30px rgba(34,197,94,.2),0 12px 40px rgba(0,0,0,.3)}
-
-/* 5. ANIMATED TOP BORDER ON BRANCH CARDS */
-.branch-card::before{transition:all .3s}
-.branch-card:hover::before{filter:brightness(1.4);box-shadow:0 0 15px currentColor}
-
-/* 6. STATS COUNTER ANIMATION */
-.stat-num{transition:all .3s}
-
-/* 7. CTA BUTTON SHINE EFFECT */
-.cta-main{position:relative;overflow:hidden}
-.cta-main::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
-  animation:shine 3s ease-in-out infinite}
-@keyframes shine{0%{left:-100%}50%,100%{left:150%}}
-
-/* 8. SCROLL REVEAL - FADE IN UP */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-
-/* 9. FLOATING ANIMATION ON BRANCH ICONS */
-.branch-icon{animation:floatIcon 3s ease-in-out infinite}
-.branch-card:nth-child(2) .branch-icon{animation-delay:.5s}
-.branch-card:nth-child(3) .branch-icon{animation-delay:1s}
-.branch-card:nth-child(4) .branch-icon{animation-delay:1.5s}
-@keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-
-/* 10. NEON GLOW ON LOGO */
-.logo:hover .logo span:first-child{text-shadow:0 0 20px rgba(232,50,26,.8)}
-.logo-badge{animation:badgeBlink 4s ease-in-out infinite}
-@keyframes badgeBlink{0%,90%,100%{opacity:1}95%{opacity:.6}}
-
-/* 11. STAT NUMBERS GLOW */
-.stat-num{text-shadow:0 0 20px rgba(59,130,246,.3)}
-
-/* 12. HERO LINE ANIMATION */
-.hero::after{animation:lineGrow 2s ease-out forwards}
-@keyframes lineGrow{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
-
-/* 13. SECTION TAG SHIMMER */
-.section-tag{position:relative;overflow:hidden}
-.section-tag::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(59,130,246,.3),transparent);
-  animation:tagShimmer 4s ease-in-out infinite}
-@keyframes tagShimmer{0%{left:-100%}50%,100%{left:150%}}
-
-/* 14. TRUST ITEM HOVER GLOW */
-.trust-item{transition:.3s}
-.trust-item:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(59,130,246,.15)}
-
-/* 15. MODAL OPEN ANIMATION */
-.modal{animation:modalPop .3s cubic-bezier(.34,1.56,.64,1)}
-@keyframes modalPop{from{transform:scale(.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 </style>
 </head>
 <body>
 
-<!-- VERIFIED BANNER -->
-<div class="verified-banner" id="verifiedBanner">
-  ✅ <span class="lang-es">¡Email verificado exitosamente! Ya podés iniciar sesión.</span>
-  <span class="lang-en" style="display:none">Email verified successfully! You can now log in.</span>
-</div>
-
 <!-- HEADER -->
 <header>
-  <a class="logo" href="/">HP<span>CARS</span><span class="logo-badge">PRO</span></a>
+  <a class="logo" href="/">
+    <div class="logo-icon">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 4h4v5h4V4h4v12h-4v-4H8v4H4V4z" fill="#fff"/></svg>
+    </div>
+    <span class="logo-name">HP <span>CARS</span></span>
+    <span class="logo-tag">PRO</span>
+  </a>
   <nav>
-    <a href="#ramas" class="lang-es">Servicios</a>
-    <a href="#ramas" class="lang-en" style="display:none">Services</a>
+    <a href="#servicios" class="lang-es">Servicios</a>
+    <a href="#servicios" class="lang-en" style="display:none">Services</a>
     <a href="#como-funciona" class="lang-es">¿Cómo funciona?</a>
     <a href="#como-funciona" class="lang-en" style="display:none">How it works</a>
     <a href="#planes" class="lang-es">Planes</a>
     <a href="#planes" class="lang-en" style="display:none">Plans</a>
   </nav>
-  <div class="header-actions">
-    <div style="display:flex;gap:.25rem">
+  <div class="hdr-right">
+    <div class="lang-wrap">
       <button class="lang-btn active" onclick="setLang('es')">ES</button>
       <button class="lang-btn" onclick="setLang('en')">EN</button>
     </div>
-    <button class="btn-outline" onclick="openModal('loginModal')" id="loginBtn">
-      <span class="lang-es">Iniciar sesión</span>
-      <span class="lang-en" style="display:none">Login</span>
+    <button class="btn-ghost" onclick="openModal('loginModal')" id="loginBtn">
+      <span class="lang-es">Iniciar sesión</span><span class="lang-en" style="display:none">Login</span>
     </button>
-    <button class="btn-primary" id="registerBtn" onclick="openModal('registerModal')">
-      <span class="lang-es">Registrarse</span>
-      <span class="lang-en" style="display:none">Sign Up</span>
+    <button class="btn-solid" id="registerBtn" onclick="openModal('registerModal')">
+      <span class="lang-es">Registrarse</span><span class="lang-en" style="display:none">Sign up</span>
     </button>
   </div>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-img-wrap">
-    <img src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=1800&q=90&auto=format&fit=crop&crop=center" 
-         alt="HP CARS Chiptuning" class="hero-img"/>
-    <div class="hero-img-overlay"></div>
-    <div class="hero-scan-line"></div>
-    <div class="hero-particles">
-      <div class="particle p1"></div>
-      <div class="particle p2"></div>
-      <div class="particle p3"></div>
-      <div class="particle p4"></div>
-      <div class="particle p5"></div>
-    </div>
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=1800&q=90&auto=format&fit=crop&crop=center" alt="Honda"/>
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-bg-glow"></div>
   </div>
-  <div class="hero-left" style="position:relative;z-index:2;max-width:600px;padding:140px 0 80px 6vw">
-    <div class="hero-badge">
-      <span class="lang-es">Servicio profesional · Respuesta en &lt;4hs</span>
-      <span class="lang-en" style="display:none">Professional service · Response in &lt;4hrs</span>
+  <div class="hero-content">
+    <div class="hero-pill">
+      <span class="lang-es">Servicio activo · Respuesta en &lt;4hs</span>
+      <span class="lang-en" style="display:none">Active service · Response &lt;4hrs</span>
     </div>
-    <h1>
-      <span class="lang-es">Soluciones ECU<br/><span class="highlight">profesionales</span><br/>para tu vehículo</span>
-      <span class="lang-en" style="display:none">Professional ECU<br/><span class="highlight">solutions</span><br/>for your vehicle</span>
+    <h1 class="hero-title">
+      <span class="lang-es">Soluciones ECU<br/><em>profesionales</em><br/>para tu vehículo</span>
+      <span class="lang-en" style="display:none">Professional ECU<br/><em>solutions</em><br/>for your vehicle</span>
     </h1>
-    <p class="hero-sub lang-es">Chiptuning, IMMO OFF, Seed Key y soluciones especiales con más de 5 años de experiencia y 12.000 archivos procesados.</p>
-    <p class="hero-sub lang-en" style="display:none">Chiptuning, IMMO OFF, Seed Key and special solutions with 5+ years of experience and 12,000+ processed files.</p>
-    <p class="hero-sub" style="margin:0 0 2rem"></p>
-    <div class="hero-ctas" style="justify-content:flex-start">
-      <button class="cta-main" onclick="openModal('registerModal')">
-        ⚡ <span class="lang-es">Crear cuenta gratis</span>
+    <p class="hero-desc lang-es">Chiptuning, IMMO OFF, Seed Key y soluciones especiales. Más de 5 años de experiencia y 12.000 archivos procesados con precisión.</p>
+    <p class="hero-desc lang-en" style="display:none">Chiptuning, IMMO OFF, Seed Key and special solutions. 5+ years of experience and 12,000+ files precisely processed.</p>
+    <div class="hero-btns">
+      <button class="hero-btn-main" onclick="openModal('registerModal')">
+        <span class="lang-es">Crear cuenta gratis</span>
         <span class="lang-en" style="display:none">Create free account</span>
+        <span>→</span>
       </button>
-      <button class="cta-sec" onclick="document.getElementById('ramas').scrollIntoView({behavior:'smooth'})">
-        <span class="lang-es">Ver servicios →</span>
-        <span class="lang-en" style="display:none">View services →</span>
+      <button class="hero-btn-sec" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">
+        <span class="lang-es">Ver servicios</span>
+        <span class="lang-en" style="display:none">View services</span>
       </button>
     </div>
-    <div class="stats-bar" style="justify-content:flex-start;margin-top:3rem">
-      <div class="stat"><span class="stat-num">12K<span>+</span></span><span class="stat-label lang-es">Archivos procesados</span><span class="stat-label lang-en" style="display:none">Files processed</span></div>
-      <div class="stat"><span class="stat-num">98<span>%</span></span><span class="stat-label lang-es">Satisfacción</span><span class="stat-label lang-en" style="display:none">Satisfaction</span></div>
-      <div class="stat"><span class="stat-num">&lt;4<span>h</span></span><span class="stat-label lang-es">Respuesta manual</span><span class="stat-label lang-en" style="display:none">Manual response</span></div>
-      <div class="stat"><span class="stat-num">5<span>+</span></span><span class="stat-label lang-es">Años de experiencia</span><span class="stat-label lang-en" style="display:none">Years experience</span></div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hs-val">12K<span>+</span></div>
+        <div class="hs-lbl lang-es">Archivos procesados</div>
+        <div class="hs-lbl lang-en" style="display:none">Files processed</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-val">98<span>%</span></div>
+        <div class="hs-lbl lang-es">Satisfacción</div>
+        <div class="hs-lbl lang-en" style="display:none">Satisfaction</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-val">&lt;4<span>h</span></div>
+        <div class="hs-lbl lang-es">Tiempo respuesta</div>
+        <div class="hs-lbl lang-en" style="display:none">Response time</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-val">5<span>+</span></div>
+        <div class="hs-lbl lang-es">Años experiencia</div>
+        <div class="hs-lbl lang-en" style="display:none">Years experience</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- RAMAS -->
-<section class="branches" id="ramas">
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span class="marquee-item">HONDA</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">BMW</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">VOLKSWAGEN</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">AUDI</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">TOYOTA</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">FORD</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">CHEVROLET</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">MERCEDES-BENZ</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">RENAULT</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">PEUGEOT</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">FIAT</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">CITROEN</span><span class="marquee-dot">·</span>
+    <!-- repeat for seamless loop -->
+    <span class="marquee-item">HONDA</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">BMW</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">VOLKSWAGEN</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">AUDI</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">TOYOTA</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">FORD</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">CHEVROLET</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">MERCEDES-BENZ</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">RENAULT</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">PEUGEOT</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">FIAT</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">CITROEN</span><span class="marquee-dot">·</span>
+  </div>
+</div>
+
+<!-- SERVICIOS -->
+<section class="services py" id="servicios">
   <div class="container">
-    <div class="section-tag lang-es">Nuestros servicios</div>
-    <div class="section-tag lang-en" style="display:none">Our services</div>
+    <div class="section-label lang-es">Nuestros servicios</div>
+    <div class="section-label lang-en" style="display:none">Our services</div>
     <h2 class="section-title lang-es">Todo lo que necesitás para tu ECU</h2>
     <h2 class="section-title lang-en" style="display:none">Everything you need for your ECU</h2>
-    <p class="section-sub lang-es">Cada rama concentra herramientas y soluciones especializadas. Subí tu archivo y recibí el resultado.</p>
-    <p class="section-sub lang-en" style="display:none">Each branch focuses on specialized tools and solutions. Upload your file and receive the result.</p>
-    <div class="branches-grid">
+    <p class="section-sub lang-es">Subí tu archivo, completá los datos del vehículo y recibí la solución en tu dashboard.</p>
+    <p class="section-sub lang-en" style="display:none">Upload your file, fill in vehicle data and receive the solution in your dashboard.</p>
+    <div class="services-grid">
 
-      <div class="branch-card" data-branch="chiptuning" onclick="openServiceModal('chiptuning')">
-        <span class="branch-badge badge-auto lang-es">Automático / Manual</span>
-        <span class="branch-badge badge-auto lang-en" style="display:none">Auto / Manual</span>
-        <div class="branch-icon">🔥</div>
-        <div class="branch-title lang-es">Chiptuning</div>
-        <div class="branch-title lang-en" style="display:none">Chiptuning</div>
-        <p class="branch-desc lang-es">Optimizá el rendimiento de tu motor con remapeos personalizados. Stage 1, Stage 2, DPF OFF, EGR OFF y más opciones.</p>
-        <p class="branch-desc lang-en" style="display:none">ECU remapping for more power, torque and efficiency. Stage 1, Stage 2, DPF OFF, EGR OFF and more.</p>
-        <div class="branch-tags"><span class="branch-tag">Stage 1</span><span class="branch-tag">Stage 2</span><span class="branch-tag">DPF OFF</span><span class="branch-tag">EGR OFF</span><span class="branch-tag">Pops & Bangs</span></div>
-        <div class="branch-cta">→ <span class="lang-es">Subir archivo</span><span class="lang-en" style="display:none">Upload file</span></div>
+      <div class="svc-card reveal" data-s="chip" onclick="openServiceModal('chiptuning')">
+        <span class="svc-badge badge-auto lang-es">Automático / Manual</span>
+        <span class="svc-badge badge-auto lang-en" style="display:none">Auto / Manual</span>
+        <div class="svc-icon red">🔥</div>
+        <div class="svc-name">Chiptuning</div>
+        <p class="svc-desc lang-es">Optimizá el rendimiento de tu motor con remapeos personalizados. Stage 1, Stage 2, DPF OFF, EGR OFF y más.</p>
+        <p class="svc-desc lang-en" style="display:none">Optimize your engine performance with custom remapping. Stage 1, Stage 2, DPF OFF, EGR OFF and more.</p>
+        <div class="svc-tags"><span class="svc-tag">Stage 1</span><span class="svc-tag">Stage 2</span><span class="svc-tag">DPF OFF</span><span class="svc-tag">EGR OFF</span></div>
+        <div class="svc-arrow lang-es">Subir archivo →</div>
+        <div class="svc-arrow lang-en" style="display:none">Upload file →</div>
       </div>
 
-      <div class="branch-card" data-branch="immo" onclick="openServiceModal('immo')">
-        <span class="branch-badge badge-manual">Manual</span>
-        <div class="branch-icon">🔓</div>
-        <div class="branch-title lang-es">IMMO OFF</div>
-        <div class="branch-title lang-en" style="display:none">IMMO OFF</div>
-        <p class="branch-desc lang-es">Desactivación segura del inmovilizador para ECUs de todas las marcas. Solución profesional con herramientas exclusivas.</p>
-        <p class="branch-desc lang-en" style="display:none">Immobilizer disabling for ECUs from different manufacturers. Professional solution with our own tools.</p>
-        <div class="branch-tags"><span class="branch-tag">E78</span><span class="branch-tag">E80</span><span class="branch-tag">ME7</span><span class="branch-tag">EDC16</span><span class="branch-tag">MED9</span></div>
-        <div class="branch-cta">→ <span class="lang-es">Subir archivo</span><span class="lang-en" style="display:none">Upload file</span></div>
+      <div class="svc-card reveal" data-s="immo" onclick="openServiceModal('immo')">
+        <span class="svc-badge badge-manual">Manual</span>
+        <div class="svc-icon amber">🔓</div>
+        <div class="svc-name">IMMO OFF</div>
+        <p class="svc-desc lang-es">Desactivación segura del inmovilizador para ECUs de todas las marcas con herramientas exclusivas.</p>
+        <p class="svc-desc lang-en" style="display:none">Safe immobilizer disabling for ECUs from all brands with exclusive tools.</p>
+        <div class="svc-tags"><span class="svc-tag">E78</span><span class="svc-tag">E80</span><span class="svc-tag">ME7</span><span class="svc-tag">EDC16</span></div>
+        <div class="svc-arrow lang-es">Subir archivo →</div>
+        <div class="svc-arrow lang-en" style="display:none">Upload file →</div>
       </div>
 
-      <div class="branch-card" data-branch="seedkey" onclick="openServiceModal('seedkey')">
-        <span class="branch-badge badge-auto lang-es">Automático</span>
-        <span class="branch-badge badge-auto lang-en" style="display:none">Automatic</span>
-        <div class="branch-icon">🔑</div>
-        <div class="branch-title">Seed Key</div>
-        <p class="branch-desc lang-es">Calculadoras de Seed Key para PSA, VAG, BMW y más. Obtené tu clave de acceso al instante sin complicaciones.</p>
-        <p class="branch-desc lang-en" style="display:none">Seed Key calculators for PSA, VAG, BMW and other ECUs. Instant result for many algorithms.</p>
-        <div class="branch-tags"><span class="branch-tag">PSA</span><span class="branch-tag">VAG</span><span class="branch-tag">BMW</span><span class="branch-tag">Bosch</span><span class="branch-tag">Delphi</span></div>
-        <div class="branch-cta">→ <span class="lang-es">Calcular</span><span class="lang-en" style="display:none">Calculate</span></div>
+      <div class="svc-card reveal" data-s="seed" onclick="openServiceModal('seedkey')">
+        <span class="svc-badge badge-auto lang-es">Automático</span>
+        <span class="svc-badge badge-auto lang-en" style="display:none">Automatic</span>
+        <div class="svc-icon blue">🔑</div>
+        <div class="svc-name">Seed Key</div>
+        <p class="svc-desc lang-es">Calculadoras de Seed Key para PSA, VAG, BMW y más. Resultado instantáneo sin complicaciones.</p>
+        <p class="svc-desc lang-en" style="display:none">Seed Key calculators for PSA, VAG, BMW and more. Instant result without complications.</p>
+        <div class="svc-tags"><span class="svc-tag">PSA</span><span class="svc-tag">VAG</span><span class="svc-tag">BMW</span><span class="svc-tag">Bosch</span></div>
+        <div class="svc-arrow lang-es">Calcular →</div>
+        <div class="svc-arrow lang-en" style="display:none">Calculate →</div>
       </div>
 
-      <div class="branch-card" data-branch="special" onclick="openServiceModal('special')">
-        <span class="branch-badge badge-manual">Manual</span>
-        <div class="branch-icon">⚡</div>
-        <div class="branch-title lang-es">Soluciones Especiales</div>
-        <div class="branch-title lang-en" style="display:none">Special Solutions</div>
-        <p class="branch-desc lang-es">Recuperación de EEPROM, corrección de odómetro, airbag, adaptaciones y cualquier caso complejo que necesite un experto.</p>
-        <p class="branch-desc lang-en" style="display:none">EEPROM recovery, odometer, airbag, ECU adaptations and complex cases requiring expert analysis.</p>
-        <div class="branch-tags"><span class="branch-tag">EEPROM</span><span class="branch-tag">Odómetro</span><span class="branch-tag">Airbag</span><span class="branch-tag">Adaptación ECU</span></div>
-        <div class="branch-cta">→ <span class="lang-es">Consultar</span><span class="lang-en" style="display:none">Consult</span></div>
+      <div class="svc-card reveal" data-s="special" onclick="openServiceModal('special')">
+        <span class="svc-badge badge-manual">Manual</span>
+        <div class="svc-icon green">⚡</div>
+        <div class="svc-name lang-es">Soluciones Especiales</div>
+        <div class="svc-name lang-en" style="display:none">Special Solutions</div>
+        <p class="svc-desc lang-es">Recuperación de EEPROM, corrección de odómetro, airbag, adaptaciones y casos complejos.</p>
+        <p class="svc-desc lang-en" style="display:none">EEPROM recovery, odometer correction, airbag, adaptations and complex cases.</p>
+        <div class="svc-tags"><span class="svc-tag">EEPROM</span><span class="svc-tag">Odómetro</span><span class="svc-tag">Airbag</span></div>
+        <div class="svc-arrow lang-es">Consultar →</div>
+        <div class="svc-arrow lang-en" style="display:none">Consult →</div>
       </div>
 
     </div>
@@ -514,48 +428,51 @@ body::before{content:'';position:fixed;inset:0;
 </section>
 
 <!-- CÓMO FUNCIONA -->
-<section class="how" id="como-funciona">
+<section class="how py" id="como-funciona">
   <div class="container">
-    <div class="section-tag lang-es">Proceso</div>
-    <div class="section-tag lang-en" style="display:none">Process</div>
+    <div class="section-label lang-es">Proceso</div>
+    <div class="section-label lang-en" style="display:none">Process</div>
     <h2 class="section-title lang-es">¿Cómo funciona?</h2>
     <h2 class="section-title lang-en" style="display:none">How does it work?</h2>
     <p class="section-sub lang-es">Dos flujos según el tipo de solución: automática o con revisión del tuner.</p>
-    <p class="section-sub lang-en" style="display:none">Two workflows depending on the solution type: automatic or with tuner review.</p>
+    <p class="section-sub lang-en" style="display:none">Two workflows depending on solution type: automatic or with tuner review.</p>
     <div class="how-cols">
-      <div class="col-auto">
-        <div class="how-col-title"><div class="dot" style="background:var(--green)"></div> <span class="lang-es">Solución automática</span><span class="lang-en" style="display:none">Automatic solution</span></div>
-        <div class="step active"><div class="step-num">1</div><div class="step-info"><h4 class="lang-es">Registrarse / Iniciar sesión</h4><h4 class="lang-en" style="display:none">Register / Login</h4><p class="lang-es">Creá tu cuenta con email, Google o Facebook.</p><p class="lang-en" style="display:none">Create your account with email, Google or Facebook.</p></div></div>
-        <div class="step active"><div class="step-num">2</div><div class="step-info"><h4 class="lang-es">Subir archivo + datos del vehículo</h4><h4 class="lang-en" style="display:none">Upload file + vehicle data</h4><p class="lang-es">Seleccioná el servicio, completá marca/modelo/ECU y adjuntá el archivo.</p><p class="lang-en" style="display:none">Select the service, fill in brand/model/ECU and attach the file.</p></div></div>
-        <div class="step active"><div class="step-num">3</div><div class="step-info"><h4 class="lang-es">Procesado instantáneo</h4><h4 class="lang-en" style="display:none">Instant processing</h4><p class="lang-es">El sistema procesa automáticamente tu archivo.</p><p class="lang-en" style="display:none">The system automatically processes your file.</p></div></div>
-        <div class="step active"><div class="step-num">4</div><div class="step-info"><h4 class="lang-es">Notificación y descarga</h4><h4 class="lang-en" style="display:none">Notification & download</h4><p class="lang-es">Te notificamos por email y podés descargar con licencia activa.</p><p class="lang-en" style="display:none">We notify you by email and you can download with an active license.</p></div></div>
+      <div class="col-a reveal">
+        <div class="how-col-head lang-es">Solución automática</div>
+        <div class="how-col-head lang-en" style="display:none">Automatic solution</div>
+        <div class="step on"><div class="step-n">1</div><div class="step-body"><h4 class="lang-es">Crear cuenta</h4><h4 class="lang-en" style="display:none">Create account</h4><p class="lang-es">Registrate con email o Google en segundos.</p><p class="lang-en" style="display:none">Register with email or Google in seconds.</p></div></div>
+        <div class="step on"><div class="step-n">2</div><div class="step-body"><h4 class="lang-es">Subir archivo</h4><h4 class="lang-en" style="display:none">Upload file</h4><p class="lang-es">Seleccioná el servicio y adjuntá el archivo de tu ECU.</p><p class="lang-en" style="display:none">Select the service and attach your ECU file.</p></div></div>
+        <div class="step on"><div class="step-n">3</div><div class="step-body"><h4 class="lang-es">Procesado instantáneo</h4><h4 class="lang-en" style="display:none">Instant processing</h4><p class="lang-es">El sistema procesa automáticamente tu archivo.</p><p class="lang-en" style="display:none">The system automatically processes your file.</p></div></div>
+        <div class="step on"><div class="step-n">4</div><div class="step-body"><h4 class="lang-es">Descargar resultado</h4><h4 class="lang-en" style="display:none">Download result</h4><p class="lang-es">Recibís el email y descargás desde tu dashboard.</p><p class="lang-en" style="display:none">You receive the email and download from your dashboard.</p></div></div>
       </div>
-      <div class="col-manual">
-        <div class="how-col-title"><div class="dot" style="background:var(--amber)"></div> <span class="lang-es">Solución manual (tuner)</span><span class="lang-en" style="display:none">Manual solution (tuner)</span></div>
-        <div class="step active"><div class="step-num">1</div><div class="step-info"><h4 class="lang-es">Subir archivo</h4><h4 class="lang-en" style="display:none">Upload file</h4><p class="lang-es">Igual que el automático. Subís el archivo con los datos del vehículo.</p><p class="lang-en" style="display:none">Same as automatic. Upload the file with vehicle data.</p></div></div>
-        <div class="step active"><div class="step-num">2</div><div class="step-info"><h4 class="lang-es">Confirmación de recepción</h4><h4 class="lang-en" style="display:none">Receipt confirmation</h4><p class="lang-es">Recibís email confirmando que el tuner recibió tu archivo.</p><p class="lang-en" style="display:none">You receive an email confirming the tuner received your file.</p></div></div>
-        <div class="step active"><div class="step-num">3</div><div class="step-info"><h4 class="lang-es">El tuner analiza y procesa</h4><h4 class="lang-en" style="display:none">Tuner analyzes and processes</h4><p class="lang-es">Un experto revisa tu caso. Tiempo estimado: &lt;4 horas hábiles.</p><p class="lang-en" style="display:none">An expert reviews your case. Estimated time: &lt;4 business hours.</p></div></div>
-        <div class="step active"><div class="step-num">4</div><div class="step-info"><h4 class="lang-es">Pago y descarga</h4><h4 class="lang-en" style="display:none">Payment & download</h4><p class="lang-es">El tuner te notifica. Pagás y descargás el archivo procesado.</p><p class="lang-en" style="display:none">Tuner notifies you. Pay and download the processed file.</p></div></div>
+      <div class="col-m reveal">
+        <div class="how-col-head lang-es">Solución con tuner</div>
+        <div class="how-col-head lang-en" style="display:none">Solution with tuner</div>
+        <div class="step on"><div class="step-n">1</div><div class="step-body"><h4 class="lang-es">Subir archivo</h4><h4 class="lang-en" style="display:none">Upload file</h4><p class="lang-es">Subís el archivo con los datos del vehículo.</p><p class="lang-en" style="display:none">Upload the file with vehicle data.</p></div></div>
+        <div class="step on"><div class="step-n">2</div><div class="step-body"><h4 class="lang-es">Confirmación</h4><h4 class="lang-en" style="display:none">Confirmation</h4><p class="lang-es">Recibís email confirmando que el tuner recibió tu archivo.</p><p class="lang-en" style="display:none">You receive email confirming the tuner received your file.</p></div></div>
+        <div class="step on"><div class="step-n">3</div><div class="step-body"><h4 class="lang-es">El tuner procesa</h4><h4 class="lang-en" style="display:none">Tuner processes</h4><p class="lang-es">Un experto revisa tu caso. Menos de 4 horas hábiles.</p><p class="lang-en" style="display:none">An expert reviews your case. Less than 4 business hours.</p></div></div>
+        <div class="step on"><div class="step-n">4</div><div class="step-body"><h4 class="lang-es">Notificación y descarga</h4><h4 class="lang-en" style="display:none">Notification & download</h4><p class="lang-es">Te notificamos y descargás el archivo desde tu dashboard.</p><p class="lang-en" style="display:none">We notify you and you download from your dashboard.</p></div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- PLANES -->
-<section class="plans" id="planes">
+<section class="plans py" id="planes">
   <div class="container">
-    <div class="section-tag lang-es">Acceso al portal</div>
-    <div class="section-tag lang-en" style="display:none">Portal access</div>
+    <div class="section-label lang-es">Acceso al portal</div>
+    <div class="section-label lang-en" style="display:none">Portal access</div>
     <h2 class="section-title lang-es">Planes y licencias</h2>
     <h2 class="section-title lang-en" style="display:none">Plans & licenses</h2>
-    <p class="section-sub lang-es">Gestionado con Paddle (próximamente). Por ahora contactanos para licencias.</p>
-    <p class="section-sub lang-en" style="display:none">Managed with Paddle (coming soon). For now, contact us for licenses.</p>
+    <p class="section-sub lang-es">Pagos seguros con Paddle — próximamente. Por ahora contactanos para licencias.</p>
+    <p class="section-sub lang-en" style="display:none">Secure payments with Paddle — coming soon. For now contact us for licenses.</p>
     <div class="plans-grid">
-      <div class="plan-card">
-        <div class="plan-name lang-es">GRATIS</div>
-        <div class="plan-name lang-en" style="display:none">FREE</div>
-        <div class="plan-price">$0 <small>/ <span class="lang-es">mes</span><span class="lang-en" style="display:none">mo</span></small></div>
-        <ul class="plan-features">
+      <div class="plan reveal">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-period lang-es">Para siempre</div>
+        <div class="plan-period lang-en" style="display:none">Forever</div>
+        <ul class="plan-feats">
           <li class="lang-es">2 archivos por mes</li>
           <li class="lang-en" style="display:none">2 files per month</li>
           <li class="lang-es">Seed Key básico</li>
@@ -570,12 +487,15 @@ body::before{content:'';position:fixed;inset:0;
           <span class="lang-en" style="display:none">Create account</span>
         </button>
       </div>
-      <div class="plan-card featured">
-        <div class="plan-name">PRO</div>
-        <div class="plan-price">$ <small lang-es>consultar</small></div>
+      <div class="plan pop reveal">
+        <div class="plan-pop-tag lang-es">Más popular</div>
+        <div class="plan-pop-tag lang-en" style="display:none">Most popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price lang-es">Consultar</div>
+        <div class="plan-price lang-en" style="display:none">Contact us</div>
         <div class="plan-period lang-es">Próximamente con Paddle</div>
         <div class="plan-period lang-en" style="display:none">Coming soon with Paddle</div>
-        <ul class="plan-features">
+        <ul class="plan-feats">
           <li class="lang-es">Archivos ilimitados</li>
           <li class="lang-en" style="display:none">Unlimited files</li>
           <li class="lang-es">Todas las ramas</li>
@@ -585,57 +505,58 @@ body::before{content:'';position:fixed;inset:0;
           <li class="lang-es">Respuesta &lt;2h</li>
           <li class="lang-en" style="display:none">Response &lt;2h</li>
         </ul>
-        <button class="plan-btn" onclick="openModal('loginModal')">
+        <button class="plan-btn" onclick="openModal('registerModal')">
           <span class="lang-es">Registrarse</span>
-          <span class="lang-en" style="display:none">Sign Up</span>
+          <span class="lang-en" style="display:none">Sign up</span>
         </button>
       </div>
-      <div class="plan-card">
-        <div class="plan-name">ENTERPRISE</div>
-        <div class="plan-price">$ <small class="lang-es">a medida</small><small class="lang-en" style="display:none">custom</small></div>
-        <ul class="plan-features">
+      <div class="plan reveal">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price lang-es">A medida</div>
+        <div class="plan-price lang-en" style="display:none">Custom</div>
+        <div class="plan-period lang-es">Acuerdo comercial</div>
+        <div class="plan-period lang-en" style="display:none">Commercial agreement</div>
+        <ul class="plan-feats">
           <li class="lang-es">Volumen alto</li>
           <li class="lang-en" style="display:none">High volume</li>
           <li class="lang-es">API access</li>
           <li class="lang-en" style="display:none">API access</li>
-          <li class="lang-es">Acuerdo comercial</li>
-          <li class="lang-en" style="display:none">Commercial agreement</li>
           <li class="lang-es">Soporte dedicado</li>
           <li class="lang-en" style="display:none">Dedicated support</li>
+          <li class="lang-es">Facturación mensual</li>
+          <li class="lang-en" style="display:none">Monthly billing</li>
         </ul>
-        <button class="plan-btn" onclick="showToast('Contactanos para este plan','info')">
+        <button class="plan-btn" onclick="showToast('Contactanos por WhatsApp','info')">
           <span class="lang-es">Contactar</span>
           <span class="lang-en" style="display:none">Contact us</span>
         </button>
       </div>
     </div>
-    <p class="paddle-note">🔒 <span class="lang-es">Los pagos serán procesados de forma segura con Paddle — próximamente.</span><span class="lang-en" style="display:none">Payments will be securely processed with Paddle — coming soon.</span></p>
   </div>
 </section>
 
 <!-- CONFIANZA -->
-<section class="trust" id="confianza">
+<section class="trust py" id="confianza">
   <div class="container">
-    <div class="section-tag lang-es">Por qué elegirnos</div>
-    <div class="section-tag lang-en" style="display:none">Why choose us</div>
+    <div class="section-label lang-es">Por qué elegirnos</div>
+    <div class="section-label lang-en" style="display:none">Why choose us</div>
     <h2 class="section-title lang-es">Tu seguridad, nuestra prioridad</h2>
     <h2 class="section-title lang-en" style="display:none">Your security, our priority</h2>
     <div class="trust-grid">
-      <div class="trust-item"><span class="trust-icon">🔒</span><h4>SSL / TLS</h4><p class="lang-es">Conexión cifrada en todo momento. Tus datos viajan seguros.</p><p class="lang-en" style="display:none">Encrypted connection at all times. Your data travels safely.</p></div>
-      <div class="trust-item"><span class="trust-icon">📧</span><h4 class="lang-es">Verificación de email</h4><h4 class="lang-en" style="display:none">Email verification</h4><p class="lang-es">Confirmamos tu identidad para proteger tu cuenta.</p><p class="lang-en" style="display:none">We verify your identity to protect your account.</p></div>
-      <div class="trust-item"><span class="trust-icon">💳</span><h4 class="lang-es">Pagos seguros</h4><h4 class="lang-en" style="display:none">Secure payments</h4><p class="lang-es">Procesados con Paddle. Sin guardar datos de tarjeta.</p><p class="lang-en" style="display:none">Processed with Paddle. No card data stored.</p></div>
-      <div class="trust-item"><span class="trust-icon">🛡️</span><h4>GDPR Ready</h4><p class="lang-es">Tus datos son tuyos. Podés solicitar eliminación en cualquier momento.</p><p class="lang-en" style="display:none">Your data is yours. You can request deletion at any time.</p></div>
-      <div class="trust-item"><span class="trust-icon">⚡</span><h4>99.9% Uptime</h4><p class="lang-es">Portal disponible 24/7, monitoreado en tiempo real.</p><p class="lang-en" style="display:none">Portal available 24/7, monitored in real time.</p></div>
-      <div class="trust-item"><span class="trust-icon">👨‍🔧</span><h4 class="lang-es">Soporte real</h4><h4 class="lang-en" style="display:none">Real support</h4><p class="lang-es">Un tuner real revisa cada caso. No somos bots.</p><p class="lang-en" style="display:none">A real tuner reviews each case. We are not bots.</p></div>
+      <div class="trust-item reveal"><span class="trust-icon">🔒</span><h4>SSL / TLS</h4><p class="lang-es">Conexión cifrada en todo momento.</p><p class="lang-en" style="display:none">Encrypted connection at all times.</p></div>
+      <div class="trust-item reveal"><span class="trust-icon">📧</span><h4 class="lang-es">Email verificado</h4><h4 class="lang-en" style="display:none">Email verified</h4><p class="lang-es">Confirmamos tu identidad al registrarte.</p><p class="lang-en" style="display:none">We verify your identity when you register.</p></div>
+      <div class="trust-item reveal"><span class="trust-icon">💳</span><h4 class="lang-es">Pagos seguros</h4><h4 class="lang-en" style="display:none">Secure payments</h4><p class="lang-es">Procesados con Paddle. Sin guardar tarjetas.</p><p class="lang-en" style="display:none">Processed with Paddle. No cards stored.</p></div>
+      <div class="trust-item reveal"><span class="trust-icon">🛡️</span><h4>GDPR</h4><p class="lang-es">Tus datos son tuyos. Eliminación a pedido.</p><p class="lang-en" style="display:none">Your data is yours. Deletion on request.</p></div>
+      <div class="trust-item reveal"><span class="trust-icon">⚡</span><h4>99.9% Uptime</h4><p class="lang-es">Portal disponible 24/7.</p><p class="lang-en" style="display:none">Portal available 24/7.</p></div>
+      <div class="trust-item reveal"><span class="trust-icon">👨‍🔧</span><h4 class="lang-es">Tuner real</h4><h4 class="lang-en" style="display:none">Real tuner</h4><p class="lang-es">Un experto revisa cada caso.</p><p class="lang-en" style="display:none">An expert reviews each case.</p></div>
     </div>
-    <div class="trust-logos">
-      <div class="trust-logo-item"><span>🔒</span> SSL Secured</div>
-      <div class="trust-logo-item"><span>🏦</span> Paddle Payments</div>
-      <div class="trust-logo-item"><span>🔵</span> Google Auth</div>
-      <div class="trust-logo-item"><span>💬</span> Soporte WhatsApp</div>
-      <div class="trust-logo-item"><span>🇪🇺</span> GDPR Ready</div>
-      <div class="trust-logo-item"><span>⭐</span> 5-Star Support</div>
-      
+    <div class="brand-bar">
+      <span class="brand-item">🔵 Google Auth</span>
+      <span class="brand-item">🔒 SSL Secured</span>
+      <span class="brand-item">🏦 Paddle</span>
+      <span class="brand-item">🇪🇺 GDPR Ready</span>
+      <span class="brand-item">💬 Soporte WhatsApp</span>
+      <span class="brand-item">⭐ 5-Star Support</span>
     </div>
   </div>
 </section>
@@ -644,22 +565,25 @@ body::before{content:'';position:fixed;inset:0;
 <footer>
   <div class="footer-grid">
     <div>
-      <div class="footer-brand">HP<span style="color:var(--accent)">CARS</span> PRO</div>
-      <p class="footer-desc lang-es">Portal profesional de chiptuning y soluciones ECU. +5 años de experiencia, más de 12.000 archivos procesados.</p>
-      <p class="footer-desc lang-en" style="display:none">Professional chiptuning and ECU solutions portal. 5+ years experience, over 12,000 files processed.</p>
+      <div class="footer-brand-name">
+        <div class="logo-icon" style="width:24px;height:24px;border-radius:6px">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M4 4h4v5h4V4h4v12h-4v-4H8v4H4V4z" fill="#fff"/></svg>
+        </div>
+        HP CARS <span class="logo-tag" style="font-size:.55rem">PRO</span>
+      </div>
+      <p class="footer-desc lang-es">Soporte técnico especializado en electrónica automotriz. Chiptuning, IMMO OFF, Seed Key y más para toda América Latina.</p>
+      <p class="footer-desc lang-en" style="display:none">Specialized automotive electronics support. Chiptuning, IMMO OFF, Seed Key and more for Latin America.</p>
     </div>
     <div class="footer-col">
-      <h5 class="lang-es">Servicios</h5>
-      <h5 class="lang-en" style="display:none">Services</h5>
-      <a href="#ramas">Chiptuning</a>
-      <a href="#ramas">IMMO OFF</a>
-      <a href="#ramas">Seed Key</a>
-      <a href="#ramas" class="lang-es">Soluciones Especiales</a>
-      <a href="#ramas" class="lang-en" style="display:none">Special Solutions</a>
+      <h5 class="lang-es">Servicios</h5><h5 class="lang-en" style="display:none">Services</h5>
+      <a href="#servicios">Chiptuning</a>
+      <a href="#servicios">IMMO OFF</a>
+      <a href="#servicios">Seed Key</a>
+      <a href="#servicios" class="lang-es">Especiales</a>
+      <a href="#servicios" class="lang-en" style="display:none">Special</a>
     </div>
     <div class="footer-col">
-      <h5 class="lang-es">Portal</h5>
-      <h5 class="lang-en" style="display:none">Portal</h5>
+      <h5>Portal</h5>
       <a href="#" onclick="openModal('loginModal');return false" class="lang-es">Iniciar sesión</a>
       <a href="#" onclick="openModal('loginModal');return false" class="lang-en" style="display:none">Login</a>
       <a href="#" onclick="openModal('registerModal');return false" class="lang-es">Registrarse</a>
@@ -668,65 +592,39 @@ body::before{content:'';position:fixed;inset:0;
       <a href="#planes" class="lang-en" style="display:none">Plans</a>
     </div>
     <div class="footer-col">
-      <h5 class="lang-es">Soporte</h5>
-      <h5 class="lang-en" style="display:none">Support</h5>
-      <a href="mailto:info@hpcars.com">info@hpcars.com</a>
-      <a href="#" class="lang-es">Política de privacidad</a>
-      <a href="#" class="lang-en" style="display:none">Privacy policy</a>
-      <a href="#" class="lang-es">Términos de uso</a>
-      <a href="#" class="lang-en" style="display:none">Terms of use</a>
+      <h5 class="lang-es">Contacto</h5><h5 class="lang-en" style="display:none">Contact</h5>
+      <a href="mailto:angelgastoncalvo@gmail.com">angelgastoncalvo@gmail.com</a>
+      <a href="#" class="lang-es">Privacidad</a>
+      <a href="#" class="lang-en" style="display:none">Privacy</a>
+      <a href="#" class="lang-es">Términos</a>
+      <a href="#" class="lang-en" style="display:none">Terms</a>
     </div>
   </div>
-  <div class="footer-bottom">
+  <div class="footer-btm">
     <p>© 2025 HP CARS Portal. <span class="lang-es">Todos los derechos reservados.</span><span class="lang-en" style="display:none">All rights reserved.</span></p>
-    <div class="ssl-badge">🔒 SSL Secured</div>
+    <div class="ssl-pill">🔒 SSL Secured</div>
   </div>
 </footer>
 
 <!-- ═══ MODAL LOGIN ═══ -->
 <div class="overlay" id="loginModal" onclick="closeOnBg(event,'loginModal')">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3 class="lang-es">Iniciar sesión</h3>
-      <h3 class="lang-en" style="display:none">Login</h3>
-      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <div class="modal-hdr">
+      <h3 class="lang-es">Iniciar sesión</h3><h3 class="lang-en" style="display:none">Login</h3>
+      <button class="modal-x" onclick="closeModal('loginModal')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="social-btns">
-        <button class="social-btn google-btn" onclick="handleSocialLogin('google')">
-          <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          <span class="lang-es">Continuar con Google</span>
-          <span class="lang-en" style="display:none">Continue with Google</span>
-        </button>
-      </div>
-      <div class="divider"><span class="lang-es">o con email</span><span class="lang-en" style="display:none">or with email</span></div>
-      <div class="form-group">
-        <label class="lang-es">Email</label>
-        <label class="lang-en" style="display:none">Email</label>
-        <input type="email" id="loginEmail" placeholder="tu@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="lang-es">Contraseña</label>
-        <label class="lang-en" style="display:none">Password</label>
-        <input type="password" id="loginPw" placeholder="••••••••"/>
-      </div>
-      <button class="modal-btn" onclick="handleLogin()" id="loginSubmitBtn">
-        <span class="lang-es">Iniciar sesión</span>
-        <span class="lang-en" style="display:none">Login</span>
+    <div class="modal-bdy">
+      <button class="google-btn" onclick="handleSocial('google')">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span class="lang-es">Continuar con Google</span><span class="lang-en" style="display:none">Continue with Google</span>
       </button>
-      <div class="modal-foot">
-        <span class="lang-es">¿No tenés cuenta?</span>
-        <span class="lang-en" style="display:none">No account?</span>
-        <button onclick="switchModal('loginModal','registerModal')">
-          <span class="lang-es">Registrarse</span>
-          <span class="lang-en" style="display:none">Sign up</span>
-        </button>
-      </div>
+      <div class="divider"><span class="lang-es">o con email</span><span class="lang-en" style="display:none">or with email</span></div>
+      <div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="tu@email.com"/></div>
+      <div class="fg"><label class="lang-es">Contraseña</label><label class="lang-en" style="display:none">Password</label><input type="password" id="loginPw" placeholder="••••••••"/></div>
+      <button class="modal-btn" onclick="handleLogin()" id="loginBtn2">
+        <span class="lang-es">Iniciar sesión</span><span class="lang-en" style="display:none">Login</span>
+      </button>
+      <div class="modal-foot"><span class="lang-es">¿No tenés cuenta?</span><span class="lang-en" style="display:none">No account?</span> <button onclick="switchModal('loginModal','registerModal')"><span class="lang-es">Registrarse</span><span class="lang-en" style="display:none">Sign up</span></button></div>
     </div>
   </div>
 </div>
@@ -734,377 +632,231 @@ body::before{content:'';position:fixed;inset:0;
 <!-- ═══ MODAL REGISTRO ═══ -->
 <div class="overlay" id="registerModal" onclick="closeOnBg(event,'registerModal')">
   <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3 class="lang-es">Crear cuenta</h3>
-      <h3 class="lang-en" style="display:none">Create account</h3>
-      <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+    <div class="modal-hdr">
+      <h3 class="lang-es">Crear cuenta</h3><h3 class="lang-en" style="display:none">Create account</h3>
+      <button class="modal-x" onclick="closeModal('registerModal')">✕</button>
     </div>
-    <div class="modal-body" id="registerBody">
-      <div class="social-btns">
-        <button class="social-btn google-btn" onclick="handleSocialLogin('google')">
-          <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          <span class="lang-es">Registrarse con Google</span>
-          <span class="lang-en" style="display:none">Sign up with Google</span>
-        </button>
-      </div>
-      <div class="divider"><span class="lang-es">o con email</span><span class="lang-en" style="display:none">or with email</span></div>
-      <div class="form-group">
-        <label class="lang-es">Nombre completo</label>
-        <label class="lang-en" style="display:none">Full name</label>
-        <input type="text" id="regName" placeholder="Tu nombre"/>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="regEmail" placeholder="tu@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="lang-es">Contraseña (mín. 8 caracteres)</label>
-        <label class="lang-en" style="display:none">Password (min. 8 characters)</label>
-        <input type="password" id="regPw" placeholder="••••••••"/>
-      </div>
-      <button class="modal-btn" onclick="handleRegister()" id="regSubmitBtn">
-        <span class="lang-es">Crear cuenta</span>
-        <span class="lang-en" style="display:none">Create account</span>
+    <div class="modal-bdy" id="regBdy">
+      <button class="google-btn" onclick="handleSocial('google')">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span class="lang-es">Registrarse con Google</span><span class="lang-en" style="display:none">Sign up with Google</span>
       </button>
-      <div class="modal-foot">
-        <span class="lang-es">¿Ya tenés cuenta?</span>
-        <span class="lang-en" style="display:none">Already have an account?</span>
-        <button onclick="switchModal('registerModal','loginModal')">
-          <span class="lang-es">Iniciar sesión</span>
-          <span class="lang-en" style="display:none">Login</span>
-        </button>
-      </div>
+      <div class="divider"><span class="lang-es">o con email</span><span class="lang-en" style="display:none">or with email</span></div>
+      <div class="fg"><label class="lang-es">Nombre completo</label><label class="lang-en" style="display:none">Full name</label><input type="text" id="regName" placeholder="Tu nombre"/></div>
+      <div class="fg"><label>Email</label><input type="email" id="regEmail" placeholder="tu@email.com"/></div>
+      <div class="fg"><label class="lang-es">Contraseña (mín. 8 caracteres)</label><label class="lang-en" style="display:none">Password (min. 8 chars)</label><input type="password" id="regPw" placeholder="••••••••"/></div>
+      <button class="modal-btn" onclick="handleRegister()" id="regBtn">
+        <span class="lang-es">Crear cuenta</span><span class="lang-en" style="display:none">Create account</span>
+      </button>
+      <div class="modal-foot"><span class="lang-es">¿Ya tenés cuenta?</span><span class="lang-en" style="display:none">Already have an account?</span> <button onclick="switchModal('registerModal','loginModal')"><span class="lang-es">Iniciar sesión</span><span class="lang-en" style="display:none">Login</span></button></div>
     </div>
   </div>
 </div>
 
 <!-- ═══ MODAL UPLOAD ═══ -->
 <div class="overlay" id="uploadModal" onclick="closeOnBg(event,'uploadModal')">
-  <div class="modal upload-modal" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h3 class="lang-es">Subir archivo</h3>
-      <h3 class="lang-en" style="display:none">Upload file</h3>
-      <button class="modal-close" onclick="closeModal('uploadModal')">✕</button>
+  <div class="modal" style="max-width:500px" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3 class="lang-es">Subir archivo ECU</h3><h3 class="lang-en" style="display:none">Upload ECU file</h3>
+      <button class="modal-x" onclick="closeModal('uploadModal')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="service-grid" id="serviceGrid">
-        <div class="service-opt" data-svc="chiptuning" onclick="selectService(this)"><div class="so-icon">🔥</div><div class="so-name">Chiptuning</div></div>
-        <div class="service-opt" data-svc="immo" onclick="selectService(this)"><div class="so-icon">🔓</div><div class="so-name">IMMO OFF</div></div>
-        <div class="service-opt" data-svc="seedkey" onclick="selectService(this)"><div class="so-icon">🔑</div><div class="so-name">Seed Key</div></div>
-        <div class="service-opt" data-svc="special" onclick="selectService(this)"><div class="so-icon">⚡</div><div class="so-name lang-es">Especiales</div><div class="so-name lang-en" style="display:none">Special</div></div>
+    <div class="modal-bdy">
+      <div class="svc-sel" id="svcSel">
+        <div class="svc-opt" data-svc="chiptuning" onclick="selSvc(this)"><div class="svc-opt-icon">🔥</div><div class="svc-opt-name">Chiptuning</div></div>
+        <div class="svc-opt" data-svc="immo" onclick="selSvc(this)"><div class="svc-opt-icon">🔓</div><div class="svc-opt-name">IMMO OFF</div></div>
+        <div class="svc-opt" data-svc="seedkey" onclick="selSvc(this)"><div class="svc-opt-icon">🔑</div><div class="svc-opt-name">Seed Key</div></div>
+        <div class="svc-opt" data-svc="special" onclick="selSvc(this)"><div class="svc-opt-icon">⚡</div><div class="svc-opt-name lang-es">Especiales</div><div class="svc-opt-name lang-en" style="display:none">Special</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
-        <div class="form-group" style="margin:0">
-          <label class="lang-es">Marca</label><label class="lang-en" style="display:none">Brand</label>
-          <input type="text" id="vBrand" placeholder="Volkswagen"/>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="lang-es">Modelo</label><label class="lang-en" style="display:none">Model</label>
-          <input type="text" id="vModel" placeholder="Golf GTI"/>
-        </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.625rem">
+        <div class="fg" style="margin:0"><label class="lang-es">Marca *</label><label class="lang-en" style="display:none">Brand *</label><input type="text" id="vBrand" placeholder="Honda"/></div>
+        <div class="fg" style="margin:0"><label class="lang-es">Modelo *</label><label class="lang-en" style="display:none">Model *</label><input type="text" id="vModel" placeholder="Civic Type R"/></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
-        <div class="form-group" style="margin:0">
-          <label class="lang-es">Año</label><label class="lang-en" style="display:none">Year</label>
-          <input type="text" id="vYear" placeholder="2019"/>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label>ECU</label>
-          <input type="text" id="vEcu" placeholder="Bosch EDC17"/>
-        </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.625rem">
+        <div class="fg" style="margin:0"><label class="lang-es">Año</label><label class="lang-en" style="display:none">Year</label><input type="text" id="vYear" placeholder="2022"/></div>
+        <div class="fg" style="margin:0"><label>ECU</label><input type="text" id="vEcu" placeholder="Bosch ME17"/></div>
       </div>
-      <div class="form-group">
-        <label class="lang-es">Motor / Descripción</label>
-        <label class="lang-en" style="display:none">Engine / Description</label>
-        <textarea id="vDesc" placeholder="2.0 TDI 150hp — necesito Stage 1 + EGR OFF"></textarea>
-      </div>
-      <div class="dropzone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <input type="file" id="fileInput" accept=".bin,.ori,.hex,.zip,.rar,.7z,.ecu" onchange="handleFileDrop(this.files)"/>
-        <div class="dz-icon">📂</div>
-        <p><strong class="lang-es">Hacé clic o arrastrá tu archivo</strong><strong class="lang-en" style="display:none">Click or drag your file</strong></p>
-        <p id="dzFileName" style="color:var(--green);margin-top:.4rem;font-size:.8rem"></p>
-        <p style="font-size:.75rem;color:var(--muted);margin-top:.25rem">.bin .ori .hex .zip .rar · Max 50MB</p>
+      <div class="fg"><label class="lang-es">Descripción</label><label class="lang-en" style="display:none">Description</label><input type="text" id="vDesc" placeholder="2.0T 320hp — Stage 1 + EGR OFF"/></div>
+      <div class="dropz" id="dropZ" onclick="document.getElementById('fileInp').click()">
+        <input type="file" id="fileInp" accept=".bin,.ori,.hex,.zip,.rar,.7z,.ecu" onchange="onFile(this.files)"/>
+        <p><strong class="lang-es">Hacé clic o arrastrá el archivo</strong><strong class="lang-en" style="display:none">Click or drag the file</strong></p>
+        <p id="dzFn" style="color:var(--green);margin-top:.3rem;font-size:.78rem"></p>
+        <p style="font-size:.72rem;color:var(--muted2);margin-top:.2rem">.bin .ori .hex .zip · Max 50MB</p>
       </div>
       <button class="modal-btn" onclick="submitFile()" id="uploadBtn">
-        <span class="lang-es">Enviar archivo</span>
-        <span class="lang-en" style="display:none">Send file</span>
+        <span class="lang-es">Enviar archivo</span><span class="lang-en" style="display:none">Send file</span>
       </button>
-      <div class="progress-bar" id="uploadProgress" style="display:none"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="prog" id="progBar" style="display:none"><div class="prog-fill" id="progFill"></div></div>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span id="toastIcon">✅</span>
-  <span id="toastMsg"></span>
+<div class="toast toast-ok" id="toast"><span id="tIcon">✅</span><span id="tMsg"></span></div>
+
+<div id="verBanner" style="display:none;position:fixed;top:64px;left:0;right:0;background:rgba(34,197,94,.1);border-bottom:1px solid rgba(34,197,94,.2);color:var(--green);padding:.625rem;text-align:center;font-size:.85rem;font-weight:600;z-index:900">
+  ✅ <span class="lang-es">Email verificado. Ya podés iniciar sesión.</span><span class="lang-en" style="display:none">Email verified. You can now log in.</span>
 </div>
 
 <script>
-// ─── LANG ───
-let currentLang = localStorage.getItem('hpcars_lang') || 'es';
+// ── LANG ──
+let lang = localStorage.getItem('hpcars_lang') || 'es';
 function setLang(l) {
-  currentLang = l;
-  localStorage.setItem('hpcars_lang', l);
-  document.querySelectorAll('.lang-es').forEach(el => el.style.display = l === 'es' ? '' : 'none');
-  document.querySelectorAll('.lang-en').forEach(el => el.style.display = l === 'en' ? '' : 'none');
-  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.trim() === l.toUpperCase()));
-  document.documentElement.lang = l;
+  lang = l; localStorage.setItem('hpcars_lang', l);
+  document.querySelectorAll('.lang-es').forEach(el => el.style.display = l==='es' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = l==='en' ? '' : 'none');
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===l.toUpperCase()));
 }
-setLang(currentLang);
+setLang(lang);
 
-// ─── MODALS ───
-function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-function closeOnBg(e, id) { if (e.target.id === id) closeModal(id); }
-function switchModal(from, to) { closeModal(from); openModal(to); }
+// ── MODALS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function closeOnBg(e,id) { if(e.target.id===id) closeModal(id); }
+function switchModal(a,b) { closeModal(a); openModal(b); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open')); });
 
-// ─── TOAST ───
-function showToast(msg, type = 'ok') {
-  const t = document.getElementById('toast');
-  const icons = { ok: '✅', err: '❌', info: 'ℹ️', warn: '⚠️' };
-  document.getElementById('toastIcon').textContent = icons[type] || '✅';
-  document.getElementById('toastMsg').textContent = msg;
-  t.className = 'toast' + (type === 'err' ? ' err' : '') + ' show';
-  setTimeout(() => t.classList.remove('show'), 4000);
+// ── TOAST ──
+function showToast(msg, type='ok') {
+  const t=document.getElementById('toast'), icons={ok:'✅',err:'❌',info:'ℹ️',warn:'⚠️'};
+  document.getElementById('tIcon').textContent=icons[type]||'✅';
+  document.getElementById('tMsg').textContent=msg;
+  t.className=`toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'),4000);
 }
 
-// ─── AUTH CHECK ───
-const stored = localStorage.getItem('hpcars_user');
-if (stored) {
+// ── AUTH CHECK ──
+const storedUser = localStorage.getItem('hpcars_user');
+if (storedUser) {
   try {
-    const user = JSON.parse(stored);
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    loginBtn.textContent = user.name?.split(' ')[0] || 'Dashboard';
-    loginBtn.onclick = () => window.location.href = user.role === 'admin' ? '/admin.html' : '/dashboard.html';
-    // Show logout button
-    registerBtn.textContent = 'Cerrar sesión';
-    registerBtn.style.background = 'transparent';
-    registerBtn.style.border = '1px solid var(--border)';
-    registerBtn.style.color = 'var(--muted)';
-    registerBtn.onclick = () => window.location.href = '/logout';
+    const u = JSON.parse(storedUser);
+    const lb = document.getElementById('loginBtn');
+    const rb = document.getElementById('registerBtn');
+    lb.querySelector('.lang-es').textContent = u.name?.split(' ')[0] || 'Dashboard';
+    lb.querySelector('.lang-en').textContent = u.name?.split(' ')[0] || 'Dashboard';
+    lb.onclick = () => window.location.href = u.role==='admin' ? '/admin.html' : '/dashboard.html';
+    rb.querySelector('.lang-es').textContent = 'Cerrar sesión';
+    rb.querySelector('.lang-en').textContent = 'Log out';
+    rb.style.background = 'var(--bg3)';
+    rb.style.border = '1px solid var(--border2)';
+    rb.style.color = 'var(--muted)';
+    rb.onclick = () => window.location.href = '/logout';
   } catch(e) {}
 }
 
-// ─── LOGIN ───
-async function handleLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pw = document.getElementById('loginPw').value;
-  if (!email || !pw) return showToast(currentLang === 'es' ? 'Completá todos los campos' : 'Fill all fields', 'err');
-  const btn = document.getElementById('loginSubmitBtn');
-  btn.disabled = true;
-  btn.textContent = currentLang === 'es' ? 'Ingresando...' : 'Logging in...';
-  try {
-    const r = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pw }) });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.error || 'Error');
-    localStorage.setItem('hpcars_token', d.token);
-    localStorage.setItem('hpcars_user', JSON.stringify(d.user));
-    closeModal('loginModal');
-    showToast(currentLang === 'es' ? `Bienvenido, ${d.user.name.split(' ')[0]}!` : `Welcome, ${d.user.name.split(' ')[0]}!`);
-    setTimeout(() => window.location.href = d.user.role === 'admin' ? '/admin.html' : '/dashboard.html', 800);
-  } catch (e) {
-    showToast(e.message, 'err');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = currentLang === 'es' ? '<span>Iniciar sesión</span>' : '<span>Login</span>';
-  }
-}
-
-// ─── REGISTER ───
-async function handleRegister() {
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const pw = document.getElementById('regPw').value;
-  if (!name || !email || !pw) return showToast(currentLang === 'es' ? 'Completá todos los campos' : 'Fill all fields', 'err');
-  if (pw.length < 8) return showToast(currentLang === 'es' ? 'Contraseña mínimo 8 caracteres' : 'Password min. 8 characters', 'err');
-  const btn = document.getElementById('regSubmitBtn');
-  btn.disabled = true;
-  try {
-    const r = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password: pw }) });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.error || 'Error');
-    // Show verify screen
-    document.getElementById('registerBody').innerHTML = `
-      <div class="verify-box">
-        <div class="vi">📧</div>
-        <h4>${currentLang === 'es' ? '¡Registrado! Verificá tu email' : 'Registered! Check your email'}</h4>
-        <p>${currentLang === 'es' ? 'Te enviamos un link de confirmación a' : 'We sent a confirmation link to'} <strong>${email}</strong>. ${currentLang === 'es' ? 'Revisá también tu carpeta de spam.' : 'Also check your spam folder.'}</p>
-      </div>
-    `;
-  } catch (e) {
-    showToast(e.message, 'err');
-    btn.disabled = false;
-  }
-}
-
-// ─── SOCIAL LOGIN ───
-function handleSocialLogin(provider) {
-  if (provider === 'google') {
-    window.location.href = '/api/auth/google';
-  } else {
-    showToast(currentLang === 'es' ? 'Facebook — próximamente activado' : 'Facebook — coming soon', 'info');
-  }
-}
-
-// ─── SERVICE MODAL ───
-let selectedService = null;
-function openServiceModal(service) {
-  const token = localStorage.getItem('hpcars_token');
-  if (!token) {
-    showToast(currentLang === 'es' ? 'Iniciá sesión para subir archivos' : 'Login to upload files', 'warn');
-    openModal('loginModal'); return;
-  }
-  openModal('uploadModal');
-  // Pre-select service
-  document.querySelectorAll('.service-opt').forEach(el => {
-    if (el.dataset.svc === service) { el.classList.add('selected'); selectedService = service; }
-    else el.classList.remove('selected');
-  });
-}
-function selectService(el) {
-  document.querySelectorAll('.service-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedService = el.dataset.svc;
-}
-
-// ─── FILE DROP ───
-let selectedFile = null;
-function handleFileDrop(files) {
-  if (files[0]) {
-    selectedFile = files[0];
-    document.getElementById('dzFileName').textContent = `📎 ${files[0].name} (${(files[0].size/1024).toFixed(0)} KB)`;
-  }
-}
-const dz = document.getElementById('dropZone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleFileDrop(e.dataTransfer.files); });
-
-// ─── SUBMIT FILE ───
-async function submitFile() {
-  const brand = document.getElementById('vBrand').value.trim();
-  const model = document.getElementById('vModel').value.trim();
-  if (!selectedService) return showToast(currentLang === 'es' ? 'Seleccioná un servicio' : 'Select a service', 'err');
-  if (!brand || !model) return showToast(currentLang === 'es' ? 'Completá marca y modelo' : 'Fill brand and model', 'err');
-  const btn = document.getElementById('uploadBtn');
-  btn.disabled = true;
-  const prog = document.getElementById('uploadProgress');
-  const fill = document.getElementById('progressFill');
-  prog.style.display = 'block';
-  let pct = 0;
-  const interval = setInterval(() => { pct = Math.min(pct + 10, 85); fill.style.width = pct + '%'; }, 200);
-  try {
-    const fd = new FormData();
-    fd.append('service', selectedService);
-    fd.append('brand', brand);
-    fd.append('model', model);
-    fd.append('year', document.getElementById('vYear').value);
-    fd.append('ecu', document.getElementById('vEcu').value);
-    fd.append('description', document.getElementById('vDesc').value);
-    if (selectedFile) fd.append('file', selectedFile);
-    const token = localStorage.getItem('hpcars_token');
-    const r = await fetch('/api/files/submit', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd });
-    const d = await r.json();
-    clearInterval(interval);
-    fill.style.width = '100%';
-    if (!r.ok) throw new Error(d.error || 'Error');
-    setTimeout(() => {
-      closeModal('uploadModal');
-      showToast(currentLang === 'es' ? '✅ Archivo recibido. Te notificaremos por email.' : '✅ File received. We will notify you by email.');
-      setTimeout(() => window.location.href = '/dashboard.html', 1500);
-    }, 500);
-  } catch (e) {
-    clearInterval(interval);
-    showToast(e.message, 'err');
-    btn.disabled = false;
-    prog.style.display = 'none';
-  }
-}
-
-// ─── VERIFIED BANNER ───
-const params = new URLSearchParams(window.location.search);
-if (params.get('verified') === '1') {
-  const banner = document.getElementById('verifiedBanner');
-  banner.style.display = 'block';
-  setTimeout(() => banner.style.display = 'none', 5000);
-}
-if (params.get('oauth') === 'google-pending' || params.get('oauth') === 'facebook-pending') {
-  showToast(currentLang === 'es' ? 'Login social próximamente disponible' : 'Social login coming soon', 'info');
-}
-
-// ─── KEYBOARD ───
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
-});
-
-// ─── OAUTH CALLBACK HANDLER ───
+// ── OAUTH CALLBACK ──
 (function() {
   const p = new URLSearchParams(window.location.search);
-  const oauthToken = p.get('token');
-  const oauthUser = p.get('user');
-  if (oauthToken && oauthUser) {
+  const tk = p.get('token'), us = p.get('user');
+  if (tk && us) {
     try {
-      const user = JSON.parse(decodeURIComponent(oauthUser));
-      localStorage.setItem('hpcars_token', oauthToken);
-      localStorage.setItem('hpcars_user', JSON.stringify(user));
-      // Clean URL
+      const u = JSON.parse(decodeURIComponent(us));
+      localStorage.setItem('hpcars_token', tk);
+      localStorage.setItem('hpcars_user', JSON.stringify(u));
       window.history.replaceState({}, '', '/');
-      showToast((currentLang === 'es' ? 'Bienvenido, ' : 'Welcome, ') + (user.name?.split(' ')[0] || ''));
-      setTimeout(() => window.location.href = user.role === 'admin' ? '/admin.html' : '/dashboard.html', 800);
+      showToast((lang==='es'?'Bienvenido, ':'Welcome, ')+(u.name?.split(' ')[0]||''));
+      setTimeout(() => window.location.href = u.role==='admin' ? '/admin.html' : '/dashboard.html', 800);
     } catch(e) {}
   }
-  if (p.get('oauth') === 'error') {
-    showToast(currentLang === 'es' ? 'Error al iniciar sesión con Google' : 'Error signing in with Google', 'err');
+  if (p.get('verified')==='1') {
+    document.getElementById('verBanner').style.display='block';
+    setTimeout(()=>document.getElementById('verBanner').style.display='none',5000);
   }
 })();
 
-// ─── SCROLL REVEAL ───
-const revealEls = document.querySelectorAll('.branches-grid > *, .trust-grid > *, .plans-grid > *, .how-cols > *, .stat-card');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), i * 100);
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-revealEls.forEach(el => { el.classList.add('reveal'); observer.observe(el); });
-
-// ─── COUNTER ANIMATION ───
-function animateCounter(el, target, suffix='') {
-  let start = 0;
-  const duration = 2000;
-  const step = timestamp => {
-    if (!start) start = timestamp;
-    const progress = Math.min((timestamp - start) / duration, 1);
-    const val = Math.floor(progress * target);
-    el.textContent = val + suffix;
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = target + suffix;
-  };
-  requestAnimationFrame(step);
+// ── LOGIN ──
+async function handleLogin() {
+  const email=document.getElementById('loginEmail').value.trim();
+  const pw=document.getElementById('loginPw').value;
+  if(!email||!pw) return showToast(lang==='es'?'Completá todos los campos':'Fill all fields','err');
+  const btn=document.getElementById('loginBtn2');
+  btn.disabled=true; btn.textContent=lang==='es'?'Ingresando...':'Logging in...';
+  try {
+    const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||'Error');
+    localStorage.setItem('hpcars_token',d.token);
+    localStorage.setItem('hpcars_user',JSON.stringify(d.user));
+    closeModal('loginModal');
+    showToast((lang==='es'?'Bienvenido, ':'Welcome, ')+d.user.name.split(' ')[0]);
+    setTimeout(()=>window.location.href=d.user.role==='admin'?'/admin.html':'/dashboard.html',800);
+  } catch(e) { showToast(e.message,'err'); btn.disabled=false; btn.textContent=lang==='es'?'Iniciar sesión':'Login'; }
 }
 
-const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const nums = e.target.querySelectorAll('.stat-num');
-      nums[0] && animateCounter(nums[0].querySelector('span') || nums[0], 12, 'K+');
-      nums[1] && animateCounter(nums[1].querySelector('span') || nums[1], 98, '%');
-      statsObserver.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.5 });
-const statsBar = document.querySelector('.stats-bar');
-if (statsBar) statsObserver.observe(statsBar);
+// ── REGISTER ──
+async function handleRegister() {
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pw=document.getElementById('regPw').value;
+  if(!name||!email||!pw) return showToast(lang==='es'?'Completá todos los campos':'Fill all fields','err');
+  if(pw.length<8) return showToast(lang==='es'?'Contraseña mínimo 8 caracteres':'Password min. 8 characters','err');
+  const btn=document.getElementById('regBtn'); btn.disabled=true;
+  try {
+    const r=await fetch('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pw})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||'Error');
+    document.getElementById('regBdy').innerHTML=`<div class="verify-box"><div class="vi">📧</div><h4>${lang==='es'?'¡Verificá tu email!':'Check your email!'}</h4><p>${lang==='es'?'Enviamos un link de confirmación a':'We sent a confirmation link to'} <strong>${email}</strong></p></div>`;
+  } catch(e) { showToast(e.message,'err'); btn.disabled=false; }
+}
 
+// ── SOCIAL ──
+function handleSocial(p) {
+  if(p==='google') window.location.href='/api/auth/google';
+  else showToast('Coming soon','info');
+}
+
+// ── SERVICE MODAL ──
+function openServiceModal(svc) {
+  const tk=localStorage.getItem('hpcars_token');
+  if(!tk) { showToast(lang==='es'?'Iniciá sesión para subir archivos':'Login to upload files','warn'); openModal('loginModal'); return; }
+  openModal('uploadModal');
+  document.querySelectorAll('.svc-opt').forEach(el=>{ el.classList.toggle('sel',el.dataset.svc===svc); if(el.dataset.svc===svc) curSvc=svc; });
+}
+let curSvc=null, curFile=null;
+function selSvc(el){ document.querySelectorAll('.svc-opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); curSvc=el.dataset.svc; }
+function onFile(files){ if(files[0]){ curFile=files[0]; document.getElementById('dzFn').textContent='📎 '+files[0].name; } }
+const dz=document.getElementById('dropZ');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--accent)'});
+dz.addEventListener('dragleave',()=>dz.style.borderColor='');
+dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';onFile(e.dataTransfer.files)});
+
+async function submitFile() {
+  const brand=document.getElementById('vBrand').value.trim();
+  const model=document.getElementById('vModel').value.trim();
+  if(!curSvc) return showToast(lang==='es'?'Seleccioná un servicio':'Select a service','err');
+  if(!brand||!model) return showToast(lang==='es'?'Completá marca y modelo':'Fill brand and model','err');
+  const btn=document.getElementById('uploadBtn'); btn.disabled=true;
+  const prog=document.getElementById('progBar'); prog.style.display='block';
+  const fill=document.getElementById('progFill'); let pct=0;
+  const iv=setInterval(()=>{pct=Math.min(pct+8,80);fill.style.width=pct+'%'},200);
+  try {
+    const fd=new FormData();
+    fd.append('service',curSvc); fd.append('brand',brand); fd.append('model',model);
+    fd.append('year',document.getElementById('vYear').value);
+    fd.append('ecu',document.getElementById('vEcu').value);
+    fd.append('description',document.getElementById('vDesc').value);
+    if(curFile) fd.append('file',curFile);
+    const tk=localStorage.getItem('hpcars_token');
+    const r=await fetch('/api/files/submit',{method:'POST',headers:{Authorization:'Bearer '+tk},body:fd});
+    const d=await r.json();
+    clearInterval(iv); fill.style.width='100%';
+    if(!r.ok) throw new Error(d.error);
+    setTimeout(()=>{
+      closeModal('uploadModal');
+      showToast(lang==='es'?'✅ Archivo recibido. Te avisamos por email.':'✅ File received. We will email you.');
+      curSvc=null; curFile=null;
+      document.querySelectorAll('.svc-opt').forEach(o=>o.classList.remove('sel'));
+      ['vBrand','vModel','vYear','vEcu','vDesc'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('dzFn').textContent=''; document.getElementById('fileInp').value='';
+      btn.disabled=false; prog.style.display='none';
+      setTimeout(()=>window.location.href='/dashboard.html',1200);
+    },600);
+  } catch(e){ clearInterval(iv); showToast(e.message,'err'); btn.disabled=false; prog.style.display='none'; }
+}
+
+// ── SCROLL REVEAL ──
+const ro=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{ if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('vis'),i*80); ro.unobserve(e.target); } });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
 </script>
 </body>
 </html>
