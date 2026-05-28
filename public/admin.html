@@ -314,9 +314,11 @@ async function loadUsers() {
       <td>${u.file_count||0}</td>
       <td style="color:var(--muted);font-size:.75rem">${timeAgo(u.created_at)}</td>
       <td>
+        <button class="action-btn" onclick="setMembership(${u.id},'free')">FREE</button>
         <button class="action-btn amber" onclick="setMembership(${u.id},'pro')">PRO</button>
         <button class="action-btn green" onclick="setMembership(${u.id},'enterprise')">ENT</button>
         <button class="action-btn blue" onclick="toggleAdmin(${u.id},'${u.role}')">${u.role==='admin'?'→ User':'→ Admin'}</button>
+        <button class="action-btn red" onclick="deleteUser(${u.id},'${u.name}')">🗑️</button>
       </td>
     </tr>`).join('');
   document.getElementById('usersTable').innerHTML = `<table><thead><tr>
@@ -332,6 +334,12 @@ async function toggleAdmin(id, currentRole) {
   const role = currentRole === 'admin' ? 'user' : 'admin';
   await api(`/api/admin/users/${id}/role`, { method:'PUT', body:JSON.stringify({role}) });
   toast('Rol actualizado: '+role);
+  loadUsers();
+}
+async function deleteUser(id, name) {
+  if (!confirm(`¿Eliminar al usuario "${name}"? Esta acción no se puede deshacer.`)) return;
+  await api(`/api/admin/users/${id}`, { method:'DELETE' });
+  toast('Usuario eliminado');
   loadUsers();
 }
 
