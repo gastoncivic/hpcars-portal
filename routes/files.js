@@ -29,6 +29,23 @@ router.post('/submit', verifyToken, (req, res) => {
   try {
     console.log(`📨 Submit: user=${req.user.id} service=${service} brand=${brand} model=${model} file=${file ? file.originalname : 'none'}`);
 
+    // Auto-recreate user if DB was reset (Render ephemeral storage)
+    const existingUser = db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
+    if (!existingUser) {
+      const bcrypt = require('bcryptjs');
+      const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'angelgastoncalvo@gmail.com').split(',').map(e=>e.trim());
+      const role = ADMIN_EMAILS.includes(req.user.email) ? 'admin' : 'user';
+      const membership = role === 'admin' ? 'enterprise' : 'free';
+      try {
+        db.prepare('INSERT OR IGNORE INTO users (id, email, name, role, membership_level, email_verified, provider) VALUES (?,?,?,?,?,1,?)')
+          .run(req.user.id, req.user.email, req.user.email.split('@')[0], role, membership, 'jwt-restore');
+        console.log(`♻️ Usuario restaurado en DB: ${req.user.email}`);
+      } catch(e) {
+        console.error('Error restaurando usuario:', e.message);
+        return res.status(401).json({ error: 'Sesión expirada, volvé a iniciar sesión' });
+      }
+    }
+
     const stmt = db.prepare(`
       INSERT INTO files (user_id, service, filename, filepath, brand, model, year, ecu, engine, description, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
