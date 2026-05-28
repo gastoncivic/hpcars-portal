@@ -5,6 +5,14 @@ const { sendEmail, fileReady } = require('./email');
 
 const router = express.Router();
 
+// Accept token from query param (for direct browser downloads)
+router.use((req, res, next) => {
+  if (req.query.t && !req.headers.authorization) {
+    req.headers.authorization = 'Bearer ' + req.query.t;
+  }
+  next();
+});
+
 // All admin routes require token + admin role
 router.use(verifyToken, isAdmin);
 
@@ -114,14 +122,7 @@ router.put('/files/:id/result', (req, res) => {
 });
 
 // ─── DOWNLOAD ORIGINAL FILE ───
-router.get('/files/:id/download-original', (req, res, next) => {
-  // Accept token from query param for direct browser downloads
-  const qToken = req.query.t;
-  if (qToken && !req.headers.authorization) {
-    req.headers.authorization = 'Bearer ' + qToken;
-  }
-  next();
-}, verifyToken, isAdmin, (req, res) => {
+router.get('/files/:id/download-original', (req, res) => {
   try {
     const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
     if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
