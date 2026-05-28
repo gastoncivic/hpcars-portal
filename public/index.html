@@ -53,8 +53,8 @@ nav a:hover{color:var(--accent)}
 
 /* ─── HERO IMAGE ─── */
 .hero-img-wrap{position:absolute;inset:0;overflow:hidden;z-index:0}
-.hero-img{width:100%;height:100%;object-fit:cover;object-position:center 60%;opacity:.25;filter:grayscale(20%) saturate(1.2)}
-.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(15,22,35,.97) 0%,rgba(15,22,35,.85) 40%,rgba(15,22,35,.5) 70%,rgba(15,22,35,.8) 100%)}
+.hero-img{width:100%;height:100%;object-fit:cover;object-position:center 40%;opacity:.55;filter:saturate(1.1) contrast(1.05)}
+.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(100deg,rgba(10,14,24,1) 0%,rgba(10,14,24,.95) 30%,rgba(10,14,24,.6) 55%,rgba(10,14,24,.1) 75%,rgba(10,14,24,.4) 100%)}
 
 /* SCAN LINE EFFECT */
 .hero-scan-line{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,130,246,.015) 2px,rgba(59,130,246,.015) 4px);pointer-events:none;z-index:1}
@@ -70,7 +70,7 @@ nav a:hover{color:var(--accent)}
 @keyframes float{0%{transform:translateY(0px) translateX(0px);opacity:0}10%{opacity:.7}90%{opacity:.7}100%{transform:translateY(-120px) translateX(20px);opacity:0}}
 
 /* GLOWING LINE AT BOTTOM OF HERO */
-.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.5),rgba(59,130,246,.8),rgba(59,130,246,.5),transparent);z-index:2}
+.hero::after{content:'HONDA · BMW · VOLKSWAGEN · TOYOTA · FORD · CHEVROLET · AUDI · MERCEDES';position:absolute;bottom:0;left:0;right:0;height:36px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.2);background:rgba(0,0,0,.4);border-top:1px solid rgba(59,130,246,.15);z-index:3;overflow:hidden;white-space:nowrap}
 
 /* ─── HERO DATA PANEL ─── */
 .hero-data-panel{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:.75rem;opacity:.35;pointer-events:none}
@@ -78,7 +78,7 @@ nav a:hover{color:var(--accent)}
 @media(max-width:900px){.hero-data-panel{display:none}}
 
 /* ─── HERO ─── */
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 2rem 60px;z-index:1}
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:flex-start;text-align:left;padding:0 0 0 0;z-index:1;overflow:hidden}
 .hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%);pointer-events:none}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--accent);padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;letter-spacing:1px;margin-bottom:1.5rem;font-family:'Barlow Condensed',sans-serif}
 .hero-badge::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse-dot 2s infinite;flex-shrink:0}
@@ -87,7 +87,7 @@ nav a:hover{color:var(--accent)}
 h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-bottom:1.5rem}
 h1 .highlight{color:var(--accent);display:inline}
 h1 span{display:block}
-.hero-sub{font-size:1.1rem;color:var(--muted);max-width:500px;margin:0 auto 2.5rem;font-weight:400;line-height:1.7}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:480px;margin:0 0 1rem;font-weight:400;line-height:1.7}
 .hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
 .cta-main{background:var(--accent);color:#fff;border:none;padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.2px;transition:.2s;display:flex;align-items:center;gap:.5rem}
 .cta-main:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.4)}
@@ -293,7 +293,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-img-wrap">
-    <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=85&auto=format&fit=crop&crop=center" 
+    <img src="https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1800&q=90&auto=format&fit=crop&crop=center" 
          alt="HP CARS Chiptuning" class="hero-img"/>
     <div class="hero-img-overlay"></div>
     <div class="hero-scan-line"></div>
@@ -305,8 +305,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
       <div class="particle p5"></div>
     </div>
   </div>
-  <div class="hero-data-panel"></div>
-  <div style="position:relative;z-index:2">
+  <div class="hero-left" style="position:relative;z-index:2;max-width:600px;padding:140px 0 80px 6vw">
     <div class="hero-badge">
       <span class="lang-es">Servicio profesional · Respuesta en &lt;4hs</span>
       <span class="lang-en" style="display:none">Professional service · Response in &lt;4hrs</span>
@@ -317,17 +316,18 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
     </h1>
     <p class="hero-sub lang-es">Chiptuning, IMMO OFF, Seed Key y soluciones especiales con más de 5 años de experiencia y 12.000 archivos procesados.</p>
     <p class="hero-sub lang-en" style="display:none">Chiptuning, IMMO OFF, Seed Key and special solutions with 5+ years of experience and 12,000+ processed files.</p>
-    <div class="hero-ctas">
+    <p class="hero-sub" style="margin:0 0 2rem"></p>
+    <div class="hero-ctas" style="justify-content:flex-start">
       <button class="cta-main" onclick="openModal('registerModal')">
         ⚡ <span class="lang-es">Crear cuenta gratis</span>
         <span class="lang-en" style="display:none">Create free account</span>
       </button>
       <button class="cta-sec" onclick="document.getElementById('ramas').scrollIntoView({behavior:'smooth'})">
-        <span class="lang-es">Ver servicios</span>
-        <span class="lang-en" style="display:none">View services</span>
+        <span class="lang-es">Ver servicios →</span>
+        <span class="lang-en" style="display:none">View services →</span>
       </button>
     </div>
-    <div class="stats-bar">
+    <div class="stats-bar" style="justify-content:flex-start;margin-top:3rem">
       <div class="stat"><span class="stat-num">12K<span>+</span></span><span class="stat-label lang-es">Archivos procesados</span><span class="stat-label lang-en" style="display:none">Files processed</span></div>
       <div class="stat"><span class="stat-num">98<span>%</span></span><span class="stat-label lang-es">Satisfacción</span><span class="stat-label lang-en" style="display:none">Satisfaction</span></div>
       <div class="stat"><span class="stat-num">&lt;4<span>h</span></span><span class="stat-label lang-es">Respuesta manual</span><span class="stat-label lang-en" style="display:none">Manual response</span></div>
