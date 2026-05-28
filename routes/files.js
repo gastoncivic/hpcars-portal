@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('../db');
 const { verifyToken } = require('./auth');
+const { sendEmail, fileReceived } = require('./email');
 
 const router = express.Router();
 
@@ -49,8 +50,12 @@ router.post('/submit', verifyToken, (req, res) => {
       `Tu archivo de ${service} para ${brand} ${model} fue recibido. Te notificaremos cuando esté listo.`
     );
 
-    // TODO: Send confirmation email to user
-    // sendFileReceivedEmail(req.user.email, { service, brand, model, fileId: result.lastInsertRowid });
+    // Send confirmation email
+    const user = db.prepare('SELECT name, email FROM users WHERE id = ?').get(req.user.id);
+    if (user) {
+      const { subject, html } = fileReceived(user.name, { service, brand, model, fileId: result.lastInsertRowid });
+      sendEmail({ to: user.email, subject, html });
+    }
 
     // TODO: Notify admin
     console.log(`📨 Nuevo archivo: user=${req.user.email} service=${service} ${brand} ${model}`);
