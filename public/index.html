@@ -53,14 +53,36 @@ nav a:hover{color:var(--accent)}
 
 /* ─── HERO IMAGE ─── */
 .hero-img-wrap{position:absolute;inset:0;overflow:hidden;z-index:0}
-.hero-img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:.15;filter:grayscale(30%)}
-.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(7,8,15,.6) 0%,rgba(7,8,15,.4) 50%,rgba(7,8,15,.95) 100%)}
+.hero-img{width:100%;height:100%;object-fit:cover;object-position:center 60%;opacity:.25;filter:grayscale(20%) saturate(1.2)}
+.hero-img-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(15,22,35,.97) 0%,rgba(15,22,35,.85) 40%,rgba(15,22,35,.5) 70%,rgba(15,22,35,.8) 100%)}
+
+/* SCAN LINE EFFECT */
+.hero-scan-line{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(59,130,246,.015) 2px,rgba(59,130,246,.015) 4px);pointer-events:none;z-index:1}
+
+/* FLOATING PARTICLES */
+.hero-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
+.particle{position:absolute;border-radius:50%;animation:float linear infinite}
+.p1{width:3px;height:3px;background:var(--accent);opacity:.6;top:20%;left:15%;animation-duration:8s;animation-delay:0s}
+.p2{width:2px;height:2px;background:#60a5fa;opacity:.5;top:60%;left:75%;animation-duration:12s;animation-delay:-3s}
+.p3{width:4px;height:4px;background:var(--accent);opacity:.3;top:40%;left:85%;animation-duration:10s;animation-delay:-5s}
+.p4{width:2px;height:2px;background:#93c5fd;opacity:.7;top:75%;left:30%;animation-duration:9s;animation-delay:-2s}
+.p5{width:3px;height:3px;background:var(--accent);opacity:.4;top:30%;left:55%;animation-duration:14s;animation-delay:-7s}
+@keyframes float{0%{transform:translateY(0px) translateX(0px);opacity:0}10%{opacity:.7}90%{opacity:.7}100%{transform:translateY(-120px) translateX(20px);opacity:0}}
+
+/* GLOWING LINE AT BOTTOM OF HERO */
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.5),rgba(59,130,246,.8),rgba(59,130,246,.5),transparent);z-index:2}
+
+/* ─── HERO DATA PANEL ─── */
+.hero-data-panel{position:absolute;right:5%;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:.75rem;opacity:.35;pointer-events:none}
+.hero-data-panel::before{content:'ECU > 0x1A4F\A ADDR > 0x8000\A BOOT > OK\A CRC > VALID\A MAP > LOADED';white-space:pre;font-family:monospace;font-size:.7rem;color:#60a5fa;line-height:1.8;background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.15);border-radius:8px;padding:.75rem 1rem;display:block}
+@media(max-width:900px){.hero-data-panel{display:none}}
 
 /* ─── HERO ─── */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 2rem 60px;z-index:1}
 .hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%);pointer-events:none}
 .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--accent);padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;letter-spacing:1px;margin-bottom:1.5rem;font-family:'Barlow Condensed',sans-serif}
-.hero-badge::before{content:'●';animation:blink 1.5s infinite}
+.hero-badge::before{content:'';width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse-dot 2s infinite;flex-shrink:0}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.6)}50%{box-shadow:0 0 0 6px rgba(59,130,246,0)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.15;letter-spacing:-.5px;margin-bottom:1.5rem}
 h1 .highlight{color:var(--accent);display:inline}
@@ -271,10 +293,19 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-img-wrap">
-    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=80&auto=format&fit=crop" 
+    <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=85&auto=format&fit=crop&crop=center" 
          alt="HP CARS Chiptuning" class="hero-img"/>
     <div class="hero-img-overlay"></div>
+    <div class="hero-scan-line"></div>
+    <div class="hero-particles">
+      <div class="particle p1"></div>
+      <div class="particle p2"></div>
+      <div class="particle p3"></div>
+      <div class="particle p4"></div>
+      <div class="particle p5"></div>
+    </div>
   </div>
+  <div class="hero-data-panel"></div>
   <div style="position:relative;z-index:2">
     <div class="hero-badge">
       <span class="lang-es">Servicio profesional · Respuesta en &lt;4hs</span>
