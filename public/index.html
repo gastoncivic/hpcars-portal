@@ -175,6 +175,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
 .social-btns{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
 .social-btn{display:flex;align-items:center;gap.75rem;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:var(--glass);color:var(--text);font-size:.95rem;font-weight:600;cursor:pointer;transition:.2s;font-family:'Barlow',sans-serif;gap:.75rem}
 .social-btn:hover{background:var(--glass2);border-color:rgba(255,255,255,.15)}
+.google-btn:hover{background:#fff;border-color:#dadce0;color:#3c4043}
+.google-btn:hover svg path{opacity:1}
 .social-btn img{width:20px;height:20px;border-radius:4px}
 .divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--muted);font-size:.8rem}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -534,15 +536,15 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
     </div>
     <div class="modal-body">
       <div class="social-btns">
-        <button class="social-btn" onclick="handleSocialLogin('google')">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iI0ZGQzEwNyIgZD0iTTQzLjYxMSAyMC4wODNINDJWMjBIMjR2OGgxMS4zMDNjLTEuNjQ5IDQuNjU3LTYuMDggOC0xMS4zMDMgOC01LjUyMyAwLTEwLTQuNDc3LTEwLTBzNC40NzcgMTAgMTAgMTBjMi43NjEgMCA1LjI2LTEuMTIgNy4wNy0yLjkzbDUuNjYzIDUuNjYzQzMzLjk0IDQyLjE3NyAyOS4xOCA0NCAyNCA0NGMtMTEuMDQ2IDAtMjAtOC45NTQtMjAtMjBTMTIuOTU0IDQgMjQgNGM1LjIxOCAwIDkuOTczIDEuOTk3IDEzLjU2IDUuMjRsLTYuMDg0IDYuMDg0QzI5LjUgMTMuMjI3IDI2Ljg5NCAxMiAyNCAxMmMtNC40MTggMC04IDMuNTgyLTggOHMzLjU4MiA4IDggOGMyLjQgMCA0LjU1LS45MTIgNi4xNjMtMi4zOUg0My42MTF6IiBmaWxsLW9wYWNpdHk9Ii44Ii8+PC9zdmc+" alt="G"/>
+        <button class="social-btn google-btn" onclick="handleSocialLogin('google')">
+          <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
           <span class="lang-es">Continuar con Google</span>
           <span class="lang-en" style="display:none">Continue with Google</span>
-        </button>
-        <button class="social-btn" onclick="handleSocialLogin('facebook')">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iIzM5NzVlYSIgZD0iTTI0IDRDMTIuOTU0IDQgNCA4Ljk1NCA0IDIwYzAgOS43MzMgNy4xNiAxNy44MDggMTYuNTM4IDE5LjIyOVYyNS4yMTloLTQuOTc0di01LjIxOWg0Ljk3NHYtMy45NzhjMC00LjkwNiAyLjkyNS03LjYxMyA3LjM5My03LjYxMyAyLjE0MSAwIDQuMzgxLjM4MyA0LjM4MS4zODN2NC44MThoLTIuNDY4Yy0yLjQzMiAwLTMuMTkgMS41MDktMy4xOSAzLjA1OXYzLjY3MWg1LjQzbC0uODY3IDUuMjE5aC00LjU2M3YxNC4wMUMzNi44NCAxNy44MDggNDQgOS43MzMgNDQgMjBjMC0xMS4wNDYtOC45NTQtMjAtMjAtMjB6IiBmaWxsLW9wYWNpdHk9Ii45Ii8+PC9zdmc+" alt="F"/>
-          <span class="lang-es">Continuar con Facebook</span>
-          <span class="lang-en" style="display:none">Continue with Facebook</span>
         </button>
       </div>
       <div class="divider"><span class="lang-es">o con email</span><span class="lang-en" style="display:none">or with email</span></div>
@@ -582,15 +584,15 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
     </div>
     <div class="modal-body" id="registerBody">
       <div class="social-btns">
-        <button class="social-btn" onclick="handleSocialLogin('google')">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iI0ZGQzEwNyIgZD0iTTQzLjYxMSAyMC4wODNINDJWMjBIMjR2OGgxMS4zMDNjLTEuNjQ5IDQuNjU3LTYuMDggOC0xMS4zMDMgOC01LjUyMyAwLTEwLTQuNDc3LTEwLTBzNC40NzcgMTAgMTAgMTBjMi43NjEgMCA1LjI2LTEuMTIgNy4wNy0yLjkzbDUuNjYzIDUuNjYzQzMzLjk0IDQyLjE3NyAyOS4xOCA0NCAyNCA0NGMtMTEuMDQ2IDAtMjAtOC45NTQtMjAtMjBTMTIuOTU0IDQgMjQgNGM1LjIxOCAwIDkuOTczIDEuOTk3IDEzLjU2IDUuMjRsLTYuMDg0IDYuMDg0QzI5LjUgMTMuMjI3IDI2Ljg5NCAxMiAyNCAxMmMtNC40MTggMC04IDMuNTgyLTggOHMzLjU4MiA4IDggOGMyLjQgMCA0LjU1LS45MTIgNi4xNjMtMi4zOUg0My42MTF6IiBmaWxsLW9wYWNpdHk9Ii44Ii8+PC9zdmc+" alt="G"/>
+        <button class="social-btn google-btn" onclick="handleSocialLogin('google')">
+          <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
           <span class="lang-es">Registrarse con Google</span>
           <span class="lang-en" style="display:none">Sign up with Google</span>
-        </button>
-        <button class="social-btn" onclick="handleSocialLogin('facebook')">
-          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iIzM5NzVlYSIgZD0iTTI0IDRDMTIuOTU0IDQgNCA4Ljk1NCA0IDIwYzAgOS43MzMgNy4xNiAxNy44MDggMTYuNTM4IDE5LjIyOVYyNS4yMTloLTQuOTc0di01LjIxOWg0Ljk3NHYtMy45NzhjMC00LjkwNiAyLjkyNS03LjYxMyA3LjM5My03LjYxMyAyLjE0MSAwIDQuMzgxLjM4MyA0LjM4MS4zODN2NC44MThoLTIuNDY4Yy0yLjQzMiAwLTMuMTkgMS41MDktMy4xOSAzLjA1OXYzLjY3MWg1LjQzbC0uODY3IDUuMjE5aC00LjU2M3YxNC4wMUMzNi44NCAxNy44MDggNDQgOS43MzMgNDQgMjBjMC0xMS4wNDYtOC45NTQtMjAtMjAtMjB6IiBmaWxsLW9wYWNpdHk9Ii45Ii8+PC9zdmc+" alt="F"/>
-          <span class="lang-es">Registrarse con Facebook</span>
-          <span class="lang-en" style="display:none">Sign up with Facebook</span>
         </button>
       </div>
       <div class="divider"><span class="lang-es">o con email</span><span class="lang-en" style="display:none">or with email</span></div>
