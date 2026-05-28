@@ -777,8 +777,11 @@ async function handleRegister() {
 
 // ─── SOCIAL LOGIN ───
 function handleSocialLogin(provider) {
-  showToast(currentLang === 'es' ? `${provider === 'google' ? 'Google' : 'Facebook'} — próximamente activado` : `${provider === 'google' ? 'Google' : 'Facebook'} — coming soon`, 'info');
-  // TODO: window.location.href = `/api/auth/${provider}`;
+  if (provider === 'google') {
+    window.location.href = '/api/auth/google';
+  } else {
+    showToast(currentLang === 'es' ? 'Facebook — próximamente activado' : 'Facebook — coming soon', 'info');
+  }
 }
 
 // ─── SERVICE MODAL ───
@@ -871,6 +874,27 @@ if (params.get('oauth') === 'google-pending' || params.get('oauth') === 'faceboo
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
 });
+
+// ─── OAUTH CALLBACK HANDLER ───
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  const oauthToken = p.get('token');
+  const oauthUser = p.get('user');
+  if (oauthToken && oauthUser) {
+    try {
+      const user = JSON.parse(decodeURIComponent(oauthUser));
+      localStorage.setItem('hpcars_token', oauthToken);
+      localStorage.setItem('hpcars_user', JSON.stringify(user));
+      // Clean URL
+      window.history.replaceState({}, '', '/');
+      showToast((currentLang === 'es' ? 'Bienvenido, ' : 'Welcome, ') + (user.name?.split(' ')[0] || ''));
+      setTimeout(() => window.location.href = user.role === 'admin' ? '/admin.html' : '/dashboard.html', 800);
+    } catch(e) {}
+  }
+  if (p.get('oauth') === 'error') {
+    showToast(currentLang === 'es' ? 'Error al iniciar sesión con Google' : 'Error signing in with Google', 'err');
+  }
+})();
 </script>
 </body>
 </html>
