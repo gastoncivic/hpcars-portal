@@ -250,8 +250,47 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
 /* VERIFIED BANNER */
 .verified-banner{display:none;background:rgba(46,213,115,.08);border:1px solid rgba(46,213,115,.25);color:var(--green);padding:.75rem 1.5rem;text-align:center;font-size:.9rem;font-weight:600;position:fixed;top:70px;left:0;right:0;z-index:900}
 
-@media(max-width:900px){nav{display:none}.footer-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.branches-grid,.plans-grid{grid-template-columns:1fr}.hero-ctas{flex-direction:column;align-items:center}.stats-bar{gap:1.5rem}}
+/* ─── TABLET ─── */
+@media(max-width:1024px){
+  .hero-left{padding:120px 2rem 60px 2rem;max-width:100%}
+  .hero::after{font-size:.55rem;letter-spacing:2px}
+}
+
+/* ─── MOBILE ─── */
+@media(max-width:900px){
+  nav{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  
+  /* Hero - stack vertically on mobile */
+  .hero{align-items:center;text-align:center}
+  .hero-left{padding:100px 1.5rem 60px;max-width:100%}
+  .hero-img{object-position:60% 40%}
+  .hero-img-overlay{background:linear-gradient(180deg,rgba(10,14,24,.95) 0%,rgba(10,14,24,.85) 50%,rgba(10,14,24,.9) 100%)}
+  .hero-ctas{justify-content:center !important}
+  .stats-bar{justify-content:center !important}
+  .hero-sub{margin:0 auto 1rem !important}
+  h1{font-size:clamp(1.9rem,7vw,3rem)}
+  .hero-data-panel{display:none}
+  .hero-scan-line{display:none}
+  
+  /* Header */
+  .header-actions .btn-outline{display:none}
+}
+
+@media(max-width:600px){
+  .branches-grid,.plans-grid{grid-template-columns:1fr}
+  .hero-ctas{flex-direction:column;align-items:center;width:100%}
+  .hero-ctas button{width:100%;justify-content:center}
+  .stats-bar{gap:1.25rem;flex-wrap:wrap}
+  .stat-num{font-size:1.5rem}
+  .how-cols{grid-template-columns:1fr}
+  .trust-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;text-align:center}
+  .two-col{grid-template-columns:1fr}
+  .header-actions .lang-btn{padding:3px 8px;font-size:.7rem}
+  .logo-badge{display:none}
+}
 </style>
 </head>
 <body>
