@@ -388,16 +388,34 @@ function timeAgo(dt) {
 function buildTable(files, limit) {
   if (!files || !files.length) return `<div class="empty-state"><div class="es-icon">📂</div><p>${lang==='es'?'Aún no subiste archivos. Hacé clic en + Nuevo archivo.':'No files yet. Click + New file.'}</p></div>`;
   const rows = (limit ? files.slice(0, limit) : files).map(f => `
-    <tr>
-      <td><strong>${f.brand} ${f.model}</strong> <span style="color:var(--muted);font-size:.78rem">${f.year||''}</span></td>
+    <tr style="cursor:pointer" onclick="toggleRow(${f.id})">
+      <td>
+        <strong>${f.brand} ${f.model}</strong> <span style="color:var(--muted);font-size:.78rem">${f.year||''}</span>
+        ${f.ecu ? `<br/><span style="font-size:.72rem;color:var(--muted)">ECU: ${f.ecu}</span>` : ''}
+      </td>
       <td>${branchBadge(f.service)}</td>
       <td>${statusBadge(f.status)}</td>
       <td style="color:var(--muted);font-size:.8rem">${timeAgo(f.created_at)}</td>
-      <td>
+      <td onclick="event.stopPropagation()">
         ${f.status==='ready'?`
           <button class="dl-btn" onclick="download(${f.id})">${lang==='es'?'Descargar':'Download'}</button>
           <div style="margin-top:3px">${expiryInfo(f)}</div>
         `:f.status==='expired'?'<span style="color:var(--muted);font-size:.78rem">⚠️ Expirado</span>':'—'}
+      </td>
+    </tr>
+    <tr id="row-${f.id}" style="display:none;background:rgba(255,255,255,.02)">
+      <td colspan="5" style="padding:.75rem 1rem">
+        <div style="font-size:.83rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+          ${f.description ? `<div style="grid-column:1/-1"><span style="color:var(--muted)">${lang==='es'?'Tu descripción:':'Your description:'}</span><br/><span>${f.description}</span></div>` : ''}
+          ${f.ecu ? `<div><span style="color:var(--muted)">ECU:</span> ${f.ecu}</div>` : ''}
+          ${f.engine ? `<div><span style="color:var(--muted)">${lang==='es'?'Motor:':'Engine:'}</span> ${f.engine}</div>` : ''}
+          ${f.tuner_notes ? `
+            <div style="grid-column:1/-1;background:rgba(46,213,115,.06);border:1px solid rgba(46,213,115,.2);border-radius:8px;padding:.75rem">
+              <span style="color:var(--green);font-weight:700">📋 ${lang==='es'?'Nota del tuner:':'Tuner note:'}</span>
+              <p style="margin:.3rem 0 0;color:var(--text)">${f.tuner_notes}</p>
+            </div>` : ''}
+          ${f.status==='expired' ? `<div style="grid-column:1/-1;color:var(--muted);font-size:.78rem">⚠️ ${lang==='es'?'Este archivo ya no está disponible (expiró).':'This file is no longer available (expired).'}</div>` : ''}
+        </div>
       </td>
     </tr>`).join('');
   return `<div class="table-wrap"><table><thead><tr>
@@ -407,6 +425,11 @@ function buildTable(files, limit) {
     <th>${lang==='es'?'Hace':'Time'}</th>
     <th>${lang==='es'?'Descarga':'Download'}</th>
   </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function toggleRow(id) {
+  const row = document.getElementById('row-'+id);
+  if (row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
 }
 
 async function loadFiles() {
