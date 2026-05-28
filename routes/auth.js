@@ -104,9 +104,8 @@ router.get('/google/callback',
       membership_level: req.user.membership_level,
       avatar_url: req.user.avatar_url
     };
-    // Redirect with token in query (frontend picks it up)
-    const redirect = req.user.role === 'admin' ? '/admin.html' : '/dashboard.html';
-    res.redirect(`${redirect}?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+    // Always redirect to landing page — it handles the routing
+    res.redirect(`/?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
   }
 );
 
