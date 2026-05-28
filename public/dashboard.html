@@ -345,6 +345,21 @@ function showView(v) {
 }
 
 // ─── FILES ───
+function expiryInfo(f) {
+  if (f.status === 'expired') return '<span style="color:var(--muted);font-size:.75rem">⚠️ Expirado</span>';
+  if (f.status !== 'ready' && f.status !== 'completed') return '';
+  const count = f.download_count || 0;
+  const limit = f.download_limit || 3;
+  const remaining = limit - count;
+  if (f.expires_at) {
+    const exp = new Date(f.expires_at);
+    const now = new Date();
+    const hoursLeft = Math.max(0, Math.round((exp - now) / 3600000));
+    const timeStr = hoursLeft > 24 ? `${Math.floor(hoursLeft/24)}d` : `${hoursLeft}h`;
+    return `<span style="color:var(--amber);font-size:.72rem" title="Expira en ${timeStr}">📥 ${remaining}/${limit} · ${timeStr}</span>`;
+  }
+  return '';
+}
 function statusBadge(s) {
   const map = {
     pending: ['s-pending', lang==='es'?'⏳ Pendiente':'⏳ Pending'],
@@ -378,7 +393,12 @@ function buildTable(files, limit) {
       <td>${branchBadge(f.service)}</td>
       <td>${statusBadge(f.status)}</td>
       <td style="color:var(--muted);font-size:.8rem">${timeAgo(f.created_at)}</td>
-      <td>${f.status==='ready'?`<button class="dl-btn" onclick="download(${f.id})">${lang==='es'?'Descargar':'Download'}</button>`:'—'}</td>
+      <td>
+        ${f.status==='ready'?`
+          <button class="dl-btn" onclick="download(${f.id})">${lang==='es'?'Descargar':'Download'}</button>
+          <div style="margin-top:3px">${expiryInfo(f)}</div>
+        `:f.status==='expired'?'<span style="color:var(--muted);font-size:.78rem">⚠️ Expirado</span>':'—'}
+      </td>
     </tr>`).join('');
   return `<div class="table-wrap"><table><thead><tr>
     <th>${lang==='es'?'Vehículo':'Vehicle'}</th>
