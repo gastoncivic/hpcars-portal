@@ -76,6 +76,14 @@ app.use('/api/users', require('./routes/users'));
 
 app.get('/health', (req, res) => res.json({ status: 'healthy' }));
 
+// ─── LOGOUT ───
+app.get('/logout', (req, res) => {
+  res.send(`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <script>localStorage.removeItem('hpcars_token');localStorage.removeItem('hpcars_user');window.location.href='/';</script>
+  </head><body style="background:#07080f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif">
+  <p>Cerrando sesión...</p></body></html>`);
+});
+
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Ruta no encontrada' });
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
