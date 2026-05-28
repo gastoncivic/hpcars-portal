@@ -27,6 +27,8 @@ router.post('/submit', verifyToken, (req, res) => {
   }
 
   try {
+    console.log(`📨 Submit: user=${req.user.id} service=${service} brand=${brand} model=${model} file=${file ? file.originalname : 'none'}`);
+
     const stmt = db.prepare(`
       INSERT INTO files (user_id, service, filename, filepath, brand, model, year, ecu, engine, description, status)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -42,23 +44,24 @@ router.post('/submit', verifyToken, (req, res) => {
       'pending'
     );
 
+    console.log(`✅ Archivo guardado en DB con id=${result.lastInsertRowid}`);
+
     // Create notification for user
     db.prepare('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)').run(
-      req.user.id,
-      'file_submitted',
-      '📁 Archivo recibido',
-      `Tu archivo de ${service} para ${brand} ${model} fue recibido. Te notificaremos cuando esté listo.`
+      req.user.id, 'file_submitted', '📁 Archivo recibido',
+      `Tu archivo de ${service} para ${brand} ${model} fue recibido.`
     );
 
-    // Send confirmation email
-    const user = db.prepare('SELECT name, email FROM users WHERE id = ?').get(req.user.id);
-    if (user) {
-      const { subject, html } = fileReceived(user.name, { service, brand, model, fileId: result.lastInsertRowid });
-      sendEmail({ to: user.email, subject, html });
+    // Send confirmation email (non-blocking)
+    try {
+      const userRow = db.prepare('SELECT name, email FROM users WHERE id = ?').get(req.user.id);
+      if (userRow && userRow.email) {
+        const { subject, html } = fileReceived(userRow.name, { service, brand, model, fileId: result.lastInsertRowid });
+        sendEmail({ to: userRow.email, subject, html });
+      }
+    } catch(emailErr) {
+      console.error('Email error (non-fatal):', emailErr.message);
     }
-
-    // TODO: Notify admin
-    console.log(`📨 Nuevo archivo: user=${req.user.email} service=${service} ${brand} ${model}`);
 
     res.json({
       success: true,
@@ -66,8 +69,8 @@ router.post('/submit', verifyToken, (req, res) => {
       message: 'Archivo recibido. Te notificaremos por email cuando esté listo.'
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al procesar el archivo' });
+    console.error('Submit error:', err.message, err.stack);
+    res.status(500).json({ error: 'Error al procesar el archivo: ' + err.message });
   }
 });
 
