@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HP CARS — Mi Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07080f;--bg2:#0d0f1a;--bg3:#12151f;--red:#e8321a;--red2:#ff4d33;--amber:#f5a623;--blue:#2b7de9;--green:#2ed573;--text:#e8eaf0;--muted:#7a8296;--border:#1e2235;--glass:rgba(255,255,255,.04);--glass2:rgba(255,255,255,.07)}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;display:flex;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0d0f1a}::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px}
+
+/* SIDEBAR */
+.sidebar{width:240px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:.3s}
+.sb-logo{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;text-decoration:none}
+.sb-logo-text{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:#fff}
+.sb-logo-text span{color:var(--red)}
+.sb-badge{background:var(--red);color:#fff;font-size:.55rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:1px}
+.sb-nav{padding:1rem 0;flex:1;overflow-y:auto}
+.sb-section{padding:.5rem 1.5rem .25rem;font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;font-family:'Barlow Condensed',sans-serif}
+.sb-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.5rem;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:.2s;cursor:pointer;border:none;background:none;width:100%}
+.sb-item:hover{color:var(--text);background:var(--glass)}
+.sb-item.active{color:var(--red);background:rgba(232,50,26,.08);border-right:2px solid var(--red)}
+.sb-icon{font-size:1rem;width:20px;text-align:center}
+.sb-bottom{padding:1rem 1.5rem;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:.75rem}
+.sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:.9rem;color:#fff}
+.sb-user-info{flex:1;min-width:0}
+.sb-user-name{font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-plan{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sb-logout{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:2px;transition:.2s}
+.sb-logout:hover{color:var(--red)}
+
+/* MAIN */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(7,8,15,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:.5px}
+.topbar-actions{display:flex;align-items:center;gap:.75rem}
+.tb-btn{background:var(--red);border:none;color:#fff;padding:8px 18px;border-radius:7px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.4rem}
+.tb-btn:hover{background:var(--red2)}
+.tb-notif{position:relative;background:var(--glass);border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.tb-notif:hover{background:var(--glass2)}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+.lang-toggle{display:flex;gap:.25rem}
+.lt-btn{background:var(--glass);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;font-weight:700;transition:.2s}
+.lt-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+
+/* CONTENT */
+.content{padding:2rem;flex:1}
+
+/* STAT CARDS */
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;margin-bottom:2rem}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c)}
+.stat-card[data-c="red"]{--c:var(--red)}
+.stat-card[data-c="blue"]{--c:var(--blue)}
+.stat-card[data-c="green"]{--c:var(--green)}
+.stat-card[data-c="amber"]{--c:var(--amber)}
+.sc-icon{font-size:1.5rem;margin-bottom:.5rem}
+.sc-val{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;line-height:1}
+.sc-label{font-size:.78rem;color:var(--muted);margin-top:.2rem;font-weight:500}
+
+/* UPLOAD ZONE */
+.upload-zone{background:var(--glass);border:2px dashed var(--border);border-radius:16px;padding:2.5rem;text-align:center;cursor:pointer;transition:.3s;margin-bottom:2rem}
+.upload-zone:hover{border-color:var(--red);background:rgba(232,50,26,.04)}
+.uz-icon{font-size:3rem;margin-bottom:.75rem}
+.uz-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.25rem}
+.uz-sub{font-size:.85rem;color:var(--muted)}
+
+/* TABLE */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.section-head h3{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:.5px}
+.table-wrap{background:var(--glass);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--bg2);padding:.75rem 1rem;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:left;border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.03);transition:.15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--glass2)}
+td{padding:.875rem 1rem;font-size:.875rem}
+.status-badge{display:inline-flex;align-items:center;gap:.3rem;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:4px}
+.s-pending{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.s-processing{background:rgba(43,125,233,.1);color:var(--blue);border:1px solid rgba(43,125,233,.2)}
+.s-ready{background:rgba(46,213,115,.1);color:var(--green);border:1px solid rgba(46,213,115,.2)}
+.s-completed{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
+.s-waiting{background:rgba(232,50,26,.1);color:var(--red);border:1px solid rgba(232,50,26,.2)}
+.branch-badge{display:inline-block;font-size:.7rem;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+.b-chiptuning{background:rgba(232,50,26,.12);color:var(--red)}
+.b-immo{background:rgba(245,166,35,.12);color:var(--amber)}
+.b-seedkey{background:rgba(43,125,233,.12);color:var(--blue)}
+.b-special{background:rgba(46,213,115,.12);color:var(--green)}
+.dl-btn{background:var(--green);border:none;color:#0d1a10;padding:5px 12px;border-radius:5px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+.dl-btn:hover{opacity:.85}
+.empty-state{text-align:center;padding:3rem;color:var(--muted)}
+.empty-state .es-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-state p{font-size:.9rem}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:480px;overflow:hidden;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800}
+.modal-close{background:var(--glass);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.modal-close:hover{background:var(--red);color:#fff}
+.modal-body{padding:1.5rem}
+.form-group{margin-bottom:.875rem}
+.form-group label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.35rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:.2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--red)}
+.form-group textarea{min-height:70px;resize:vertical}
+.form-group select option{background:var(--bg2)}
+.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.service-opt{border:1px solid var(--border);border-radius:8px;padding:.6rem;cursor:pointer;text-align:center;transition:.2s}
+.service-opt:hover,.service-opt.selected{border-color:var(--red);background:rgba(232,50,26,.08)}
+.so-icon{font-size:1.3rem}.so-name{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700}
+.dropzone{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;margin-bottom:1rem}
+.dropzone:hover{border-color:var(--red);background:rgba(232,50,26,.04)}
+.dropzone input[type=file]{display:none}
+.modal-btn{width:100%;background:var(--red);border:none;color:#fff;padding:12px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:.2s}
+.modal-btn:hover{background:var(--red2)}
+.modal-btn:disabled{opacity:.5;cursor:not-allowed}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:.75rem}
+.progress-fill{height:100%;background:var(--red);border-radius:2px;width:0;transition:width .3s}
+
+/* NOTIF PANEL */
+.notif-panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-height:400px;overflow-y:auto}
+.notif-item{padding:1rem 1.25rem;border-bottom:1px solid var(--border);transition:.15s}
+.notif-item:hover{background:var(--glass)}
+.notif-item.unread{border-left:3px solid var(--red)}
+.ni-title{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700}
+.ni-msg{font-size:.82rem;color:var(--muted);margin-top:.2rem}
+.ni-time{font-size:.72rem;color:var(--muted);margin-top:.3rem}
+
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.875rem 1.25rem;font-size:.875rem;z-index:9999;max-width:300px;display:flex;gap:.6rem;align-items:center;transform:translateX(110%);transition:.3s;border-left:3px solid var(--green)}
+.toast.show{transform:translateX(0)}.toast.err{border-left-color:var(--red)}
+
+@media(max-width:900px){.sidebar{width:60px}.sb-logo-text,.sb-badge,.sb-user-info,.sb-section,.sb-item span,.sb-logout{display:none}.main{margin-left:60px}.content{padding:1rem}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a class="sb-logo" href="/"><div class="sb-logo-text">HP<span>CARS</span></div><span class="sb-badge">PRO</span></a>
+  <nav class="sb-nav">
+    <div class="sb-section lang-es">Principal</div>
+    <div class="sb-section lang-en" style="display:none">Main</div>
+    <a class="sb-item active" onclick="showView('dashboard')"><span class="sb-icon">📊</span><span class="lang-es">Dashboard</span><span class="lang-en" style="display:none">Dashboard</span></a>
+    <a class="sb-item" onclick="showView('files')"><span class="sb-icon">📁</span><span class="lang-es">Mis archivos</span><span class="lang-en" style="display:none">My files</span></a>
+    <a class="sb-item" onclick="showView('notifs')"><span class="sb-icon">🔔</span><span class="lang-es">Notificaciones</span><span class="lang-en" style="display:none">Notifications</span></a>
+    <div class="sb-section lang-es" style="margin-top:.5rem">Servicios</div>
+    <div class="sb-section lang-en" style="display:none;margin-top:.5rem">Services</div>
+    <a class="sb-item" onclick="openUploadModal('chiptuning')"><span class="sb-icon">🔥</span><span>Chiptuning</span></a>
+    <a class="sb-item" onclick="openUploadModal('immo')"><span class="sb-icon">🔓</span><span>IMMO OFF</span></a>
+    <a class="sb-item" onclick="openUploadModal('seedkey')"><span class="sb-icon">🔑</span><span>Seed Key</span></a>
+    <a class="sb-item" onclick="openUploadModal('special')"><span class="sb-icon">⚡</span><span class="lang-es">Especiales</span><span class="lang-en" style="display:none">Special</span></a>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar" id="sbAvatar">U</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name" id="sbName">Usuario</div>
+        <div class="sb-user-plan" id="sbPlan">Free</div>
+      </div>
+      <button class="sb-logout" onclick="logout()" title="Cerrar sesión">⏻</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="viewTitle" class="lang-es">Dashboard</div>
+    <div class="topbar-actions">
+      <div class="lang-toggle">
+        <button class="lt-btn active" onclick="setLang('es')">ES</button>
+        <button class="lt-btn" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="tb-notif" onclick="showView('notifs')" id="notifBtn">🔔<span class="notif-dot" id="notifDot" style="display:none"></span></button>
+      <button class="tb-btn" onclick="openUploadModal()">
+        ＋ <span class="lang-es">Nuevo archivo</span>
+        <span class="lang-en" style="display:none">New file</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- VIEW: DASHBOARD -->
+    <div id="view-dashboard">
+      <div class="stat-cards">
+        <div class="stat-card" data-c="red"><div class="sc-icon">📂</div><div class="sc-val" id="scTotal">—</div><div class="sc-label lang-es">Total archivos</div><div class="sc-label lang-en" style="display:none">Total files</div></div>
+        <div class="stat-card" data-c="blue"><div class="sc-icon">⏳</div><div class="sc-val" id="scPending">—</div><div class="sc-label lang-es">En proceso</div><div class="sc-label lang-en" style="display:none">In progress</div></div>
+        <div class="stat-card" data-c="green"><div class="sc-icon">✅</div><div class="sc-val" id="scDone">—</div><div class="sc-label lang-es">Completados</div><div class="sc-label lang-en" style="display:none">Completed</div></div>
+        <div class="stat-card" data-c="amber"><div class="sc-icon">⚡</div><div class="sc-val" id="scPlan">—</div><div class="sc-label lang-es">Plan activo</div><div class="sc-label lang-en" style="display:none">Active plan</div></div>
+      </div>
+      <div class="upload-zone" onclick="openUploadModal()">
+        <div class="uz-icon">⬆️</div>
+        <div class="uz-title lang-es">Subir nuevo archivo ECU</div>
+        <div class="uz-title lang-en" style="display:none">Upload new ECU file</div>
+        <div class="uz-sub lang-es">Hacé clic o arrastrá tu archivo .bin .ori .hex</div>
+        <div class="uz-sub lang-en" style="display:none">Click or drag your .bin .ori .hex file</div>
+      </div>
+      <div class="section-head">
+        <h3 class="lang-es">Últimos archivos</h3>
+        <h3 class="lang-en" style="display:none">Recent files</h3>
+        <button class="tb-btn" style="font-size:.8rem;padding:6px 12px" onclick="showView('files')">
+          <span class="lang-es">Ver todos</span><span class="lang-en" style="display:none">View all</span>
+        </button>
+      </div>
+      <div id="recentFilesWrap"></div>
+    </div>
+
+    <!-- VIEW: FILES -->
+    <div id="view-files" style="display:none">
+      <div class="section-head">
+        <h3 class="lang-es">Mis archivos</h3>
+        <h3 class="lang-en" style="display:none">My files</h3>
+        <button class="tb-btn" onclick="openUploadModal()">
+          ＋ <span class="lang-es">Nuevo</span><span class="lang-en" style="display:none">New</span>
+        </button>
+      </div>
+      <div id="allFilesWrap"></div>
+    </div>
+
+    <!-- VIEW: NOTIFS -->
+    <div id="view-notifs" style="display:none">
+      <div class="section-head">
+        <h3 class="lang-es">Notificaciones</h3>
+        <h3 class="lang-en" style="display:none">Notifications</h3>
+      </div>
+      <div class="notif-panel" id="notifList">
+        <div class="empty-state"><div class="es-icon">🔔</div><p class="lang-es">Sin notificaciones</p><p class="lang-en" style="display:none">No notifications</p></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="overlay" id="uploadModal" onclick="if(event.target.id==='uploadModal')closeModal('uploadModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="lang-es">Subir archivo ECU</h3>
+      <h3 class="lang-en" style="display:none">Upload ECU file</h3>
+      <button class="modal-close" onclick="closeModal('uploadModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="service-grid">
+        <div class="service-opt" data-svc="chiptuning" onclick="selectSvc(this)"><div class="so-icon">🔥</div><div class="so-name">Chiptuning</div></div>
+        <div class="service-opt" data-svc="immo" onclick="selectSvc(this)"><div class="so-icon">🔓</div><div class="so-name">IMMO OFF</div></div>
+        <div class="service-opt" data-svc="seedkey" onclick="selectSvc(this)"><div class="so-icon">🔑</div><div class="so-name">Seed Key</div></div>
+        <div class="service-opt" data-svc="special" onclick="selectSvc(this)"><div class="so-icon">⚡</div><div class="so-name lang-es">Especiales</div><div class="so-name lang-en" style="display:none">Special</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+        <div class="form-group" style="margin:0">
+          <label class="lang-es">Marca *</label><label class="lang-en" style="display:none">Brand *</label>
+          <input type="text" id="vBrand" placeholder="Volkswagen"/>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="lang-es">Modelo *</label><label class="lang-en" style="display:none">Model *</label>
+          <input type="text" id="vModel" placeholder="Golf GTI"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.6rem">
+        <div class="form-group" style="margin:0">
+          <label class="lang-es">Año</label><label class="lang-en" style="display:none">Year</label>
+          <input type="text" id="vYear" placeholder="2019"/>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>ECU</label>
+          <input type="text" id="vEcu" placeholder="Bosch EDC17"/>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:.6rem">
+        <label class="lang-es">Motor / Solución requerida</label>
+        <label class="lang-en" style="display:none">Engine / Required solution</label>
+        <textarea id="vDesc" placeholder="2.0 TDI 150hp — Stage 1 + EGR OFF"></textarea>
+      </div>
+      <div class="dropzone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept=".bin,.ori,.hex,.zip,.rar,.7z,.ecu" onchange="handleFile(this.files)"/>
+        <div>📂 <strong class="lang-es">Hacé clic o arrastrá el archivo</strong><strong class="lang-en" style="display:none">Click or drag the file</strong></div>
+        <div id="dzFn" style="color:var(--green);font-size:.8rem;margin-top:.3rem"></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.2rem">.bin .ori .hex .zip · Max 50MB</div>
+      </div>
+      <button class="modal-btn" onclick="submitFile()" id="uploadBtn">
+        <span class="lang-es">Enviar archivo</span>
+        <span class="lang-en" style="display:none">Send file</span>
+      </button>
+      <div class="progress-bar" id="progBar" style="display:none"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="ti">✅</span><span id="tm"></span></div>
+
+<script>
+// ─── AUTH ───
+const token = localStorage.getItem('hpcars_token');
+const user = JSON.parse(localStorage.getItem('hpcars_user') || 'null');
+if (!token || !user) { window.location.href = '/'; }
+if (user?.role === 'admin') window.location.href = '/admin.html';
+
+// Set user info
+if (user) {
+  document.getElementById('sbName').textContent = user.name || user.email;
+  document.getElementById('sbPlan').textContent = (user.membership_level || 'free').toUpperCase();
+  document.getElementById('sbAvatar').textContent = (user.name || 'U')[0].toUpperCase();
+  document.getElementById('scPlan').textContent = (user.membership_level || 'FREE').toUpperCase();
+}
+
+// ─── LANG ───
+let lang = localStorage.getItem('hpcars_lang') || 'es';
+function setLang(l) {
+  lang = l; localStorage.setItem('hpcars_lang', l);
+  document.querySelectorAll('.lang-es').forEach(el => el.style.display = l === 'es' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = l === 'en' ? '' : 'none');
+  document.querySelectorAll('.lt-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+}
+setLang(lang);
+
+// ─── TOAST ───
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  document.getElementById('ti').textContent = {ok:'✅',err:'❌',info:'ℹ️',warn:'⚠️'}[type]||'✅';
+  document.getElementById('tm').textContent = msg;
+  t.className = 'toast' + (type==='err'?' err':'') + ' show';
+  setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+// ─── VIEWS ───
+const views = ['dashboard','files','notifs'];
+function showView(v) {
+  views.forEach(x => document.getElementById('view-'+x).style.display = x===v?'':'none');
+  const titles = {dashboard:{es:'Dashboard',en:'Dashboard'},files:{es:'Mis archivos',en:'My files'},notifs:{es:'Notificaciones',en:'Notifications'}};
+  document.getElementById('viewTitle').textContent = titles[v]?.[lang] || v;
+  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
+  if(v==='dashboard') loadFiles();
+  if(v==='files') loadAllFiles();
+  if(v==='notifs') loadNotifs();
+}
+
+// ─── FILES ───
+function statusBadge(s) {
+  const map = {
+    pending: ['s-pending', lang==='es'?'⏳ Pendiente':'⏳ Pending'],
+    processing: ['s-processing', lang==='es'?'⚙️ Procesando':'⚙️ Processing'],
+    waiting: ['s-waiting', lang==='es'?'🕐 Esperando tuner':'🕐 Awaiting tuner'],
+    ready: ['s-ready', lang==='es'?'✅ Listo':'✅ Ready'],
+    completed: ['s-completed', lang==='es'?'✓ Completado':'✓ Completed']
+  };
+  const [cls, label] = map[s] || ['s-pending', s];
+  return `<span class="status-badge ${cls}">${label}</span>`;
+}
+function branchBadge(s) {
+  const map = {chiptuning:['b-chiptuning','Chiptuning'],immo:['b-immo','IMMO OFF'],seedkey:['b-seedkey','Seed Key'],special:['b-special','Especiales']};
+  const [cls, label] = map[s] || ['b-chiptuning', s];
+  return `<span class="branch-badge ${cls}">${label}</span>`;
+}
+function timeAgo(dt) {
+  const d = new Date(dt), now = new Date();
+  const mins = Math.floor((now-d)/60000);
+  if (mins < 1) return lang==='es'?'ahora':'now';
+  if (mins < 60) return `${mins}min`;
+  const hrs = Math.floor(mins/60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs/24)}d`;
+}
+function buildTable(files, limit) {
+  if (!files || !files.length) return `<div class="empty-state"><div class="es-icon">📂</div><p>${lang==='es'?'Aún no subiste archivos. Hacé clic en + Nuevo archivo.':'No files yet. Click + New file.'}</p></div>`;
+  const rows = (limit ? files.slice(0, limit) : files).map(f => `
+    <tr>
+      <td><strong>${f.brand} ${f.model}</strong> <span style="color:var(--muted);font-size:.78rem">${f.year||''}</span></td>
+      <td>${branchBadge(f.service)}</td>
+      <td>${statusBadge(f.status)}</td>
+      <td style="color:var(--muted);font-size:.8rem">${timeAgo(f.created_at)}</td>
+      <td>${f.status==='ready'?`<button class="dl-btn" onclick="download(${f.id})">${lang==='es'?'Descargar':'Download'}</button>`:'—'}</td>
+    </tr>`).join('');
+  return `<div class="table-wrap"><table><thead><tr>
+    <th>${lang==='es'?'Vehículo':'Vehicle'}</th>
+    <th>${lang==='es'?'Rama':'Branch'}</th>
+    <th>Status</th>
+    <th>${lang==='es'?'Hace':'Time'}</th>
+    <th>${lang==='es'?'Descarga':'Download'}</th>
+  </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+async function loadFiles() {
+  try {
+    const r = await fetch('/api/files/my', { headers: { Authorization: 'Bearer '+token } });
+    const d = await r.json();
+    const files = d.files || [];
+    document.getElementById('scTotal').textContent = files.length;
+    document.getElementById('scPending').textContent = files.filter(f => ['pending','processing','waiting'].includes(f.status)).length;
+    document.getElementById('scDone').textContent = files.filter(f => f.status === 'completed').length;
+    document.getElementById('recentFilesWrap').innerHTML = buildTable(files, 5);
+  } catch(e) { document.getElementById('recentFilesWrap').innerHTML = `<p style="color:var(--muted)">${lang==='es'?'Error al cargar archivos':'Error loading files'}</p>`; }
+}
+
+async function loadAllFiles() {
+  try {
+    const r = await fetch('/api/files/my', { headers: { Authorization: 'Bearer '+token } });
+    const d = await r.json();
+    document.getElementById('allFilesWrap').innerHTML = buildTable(d.files || []);
+  } catch(e) {}
+}
+
+async function download(id) {
+  const r = await fetch(`/api/files/download/${id}`, { headers: { Authorization: 'Bearer '+token } });
+  if (!r.ok) return toast(lang==='es'?'No se pudo descargar':'Download failed', 'err');
+  const blob = await r.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `hpcars_file_${id}.bin`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── NOTIFICATIONS ───
+async function loadNotifs() {
+  try {
+    const r = await fetch('/api/files/notifications/my', { headers: { Authorization: 'Bearer '+token } });
+    const d = await r.json();
+    const notifs = d.notifications || [];
+    const unread = notifs.filter(n => !n.read).length;
+    document.getElementById('notifDot').style.display = unread ? 'block' : 'none';
+    if (!notifs.length) return;
+    document.getElementById('notifList').innerHTML = notifs.map(n => `
+      <div class="notif-item ${!n.read?'unread':''}" onclick="markRead(${n.id},this)">
+        <div class="ni-title">${n.title}</div>
+        <div class="ni-msg">${n.message}</div>
+        <div class="ni-time">${timeAgo(n.created_at)}</div>
+      </div>`).join('');
+  } catch(e) {}
+}
+async function markRead(id, el) {
+  el.classList.remove('unread');
+  await fetch(`/api/files/notifications/${id}/read`, { method: 'PUT', headers: { Authorization: 'Bearer '+token } });
+}
+
+// ─── UPLOAD ───
+let selSvc = null, selFile = null;
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function openUploadModal(svc) {
+  openModal('uploadModal');
+  if (svc) { document.querySelectorAll('.service-opt').forEach(el => { el.classList.toggle('selected', el.dataset.svc===svc); if(el.dataset.svc===svc) selSvc=svc; }); }
+}
+function selectSvc(el) { document.querySelectorAll('.service-opt').forEach(o=>o.classList.remove('selected')); el.classList.add('selected'); selSvc=el.dataset.svc; }
+function handleFile(files) { if(files[0]) { selFile=files[0]; document.getElementById('dzFn').textContent=`📎 ${files[0].name}`; } }
+
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e=>{e.preventDefault();dz.style.borderColor='var(--red)'});
+dz.addEventListener('dragleave', ()=>dz.style.borderColor='');
+dz.addEventListener('drop', e=>{e.preventDefault();dz.style.borderColor='';handleFile(e.dataTransfer.files)});
+
+async function submitFile() {
+  const brand = document.getElementById('vBrand').value.trim();
+  const model = document.getElementById('vModel').value.trim();
+  if (!selSvc) return toast(lang==='es'?'Seleccioná un servicio':'Select a service','err');
+  if (!brand || !model) return toast(lang==='es'?'Completá marca y modelo':'Fill brand and model','err');
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = true;
+  const prog = document.getElementById('progBar');
+  const fill = document.getElementById('progFill');
+  prog.style.display = 'block';
+  let pct = 0;
+  const iv = setInterval(()=>{pct=Math.min(pct+8,80);fill.style.width=pct+'%'},200);
+  try {
+    const fd = new FormData();
+    fd.append('service', selSvc);
+    fd.append('brand', brand);
+    fd.append('model', model);
+    fd.append('year', document.getElementById('vYear').value);
+    fd.append('ecu', document.getElementById('vEcu').value);
+    fd.append('description', document.getElementById('vDesc').value);
+    if (selFile) fd.append('file', selFile);
+    const r = await fetch('/api/files/submit', { method:'POST', headers:{Authorization:'Bearer '+token}, body:fd });
+    const d = await r.json();
+    clearInterval(iv); fill.style.width='100%';
+    if (!r.ok) throw new Error(d.error);
+    setTimeout(()=>{ closeModal('uploadModal'); toast(lang==='es'?'✅ Archivo recibido. Te notificamos por email.':'✅ File received. We will notify you by email.'); loadFiles(); btn.disabled=false; prog.style.display='none'; },600);
+  } catch(e) { clearInterval(iv); toast(e.message,'err'); btn.disabled=false; prog.style.display='none'; }
+}
+
+// ─── LOGOUT ───
+function logout() { localStorage.removeItem('hpcars_token'); localStorage.removeItem('hpcars_user'); window.location.href='/'; }
+
+// ─── INIT ───
+loadFiles();
+loadNotifs();
+setInterval(loadNotifs, 30000);
+</script>
+</body>
+</html>
