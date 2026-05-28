@@ -4,6 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 require('dotenv').config();
 
 const app = express();
@@ -15,22 +16,19 @@ const RESULTS_DIR = process.env.RESULTS_DIR || path.join(__dirname, 'results');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    cb(null, `${unique}${path.extname(file.originalname)}`);
-  }
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN?.split(',') || '*',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
-app.use(cors(corsOptions));
+app.use(cors({ origin: '*', credentials: true, methods: ['GET','POST','PUT','DELETE','OPTIONS'], allowedHeaders: ['Content-Type','Authorization'] }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'hpcars_session_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
@@ -38,44 +36,38 @@ app.use((req, res, next) => {
   next();
 });
 
-// ─── SETUP ADMIN (solo primera vez) ───
+// ─── PASSPORT ───
+const { router: authRouter, passport } = require('./routes/auth');
+app.use(passport.initialize());
+app.use('/api/auth', authRouter);
+
+// ─── SETUP ADMIN ───
 app.get('/api/setup', (req, res) => {
   try {
     const db = require('./db');
-    const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'angelgastoncalvo@gmail.com').split(',');
+    const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'angelgastoncalvo@gmail.com').split(',').map(e => e.trim());
     const results = [];
     ADMIN_EMAILS.forEach(email => {
-      email = email.trim();
-      const existing = db.prepare('SELECT id, email_verified FROM users WHERE email = ?').get(email);
+      const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+      const newPw = bcrypt.hashSync('Admin1234!', 12);
       if (existing) {
-        const newPw = bcrypt.hashSync('Admin1234!', 12);
-        db.prepare('UPDATE users SET role = ?, membership_level = ?, email_verified = 1, password = ? WHERE email = ?')
-          .run('admin', 'enterprise', newPw, email);
+        db.prepare('UPDATE users SET role=?, membership_level=?, email_verified=1, password=? WHERE email=?').run('admin','enterprise',newPw,email);
         results.push(`✅ ${email} — admin + contraseña reseteada a Admin1234!`);
       } else {
-        const pw = bcrypt.hashSync('Admin1234!', 12);
-        db.prepare('INSERT INTO users (email, password, name, role, membership_level, email_verified) VALUES (?,?,?,?,?,1)')
-          .run(email, pw, 'Admin HP CARS', 'admin', 'enterprise');
+        db.prepare('INSERT INTO users (email,password,name,role,membership_level,email_verified) VALUES (?,?,?,?,?,1)').run(email,newPw,'Admin HP CARS','admin','enterprise');
         results.push(`✅ ${email} — creado con contraseña: Admin1234!`);
       }
     });
     res.json({ success: true, results });
-  } catch(e) {
-    res.status(500).json({ error: e.message });
-  }
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-const { router: authRouter } = require('./routes/auth');
-app.use('/api/auth', authRouter);
-
+// ─── FILES ───
 const filesRouter = require('./routes/files');
 app.use('/api/files', (req, res, next) => {
   if (req.method === 'POST' && req.path === '/submit') {
-    upload.single('file')(req, res, (err) => {
-      if (err) return res.status(400).json({ error: err.message });
-      next();
-    });
-  } else { next(); }
+    upload.single('file')(req, res, err => { if (err) return res.status(400).json({ error: err.message }); next(); });
+  } else next();
 }, filesRouter);
 
 app.use('/api/admin', require('./routes/admin'));
