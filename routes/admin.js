@@ -57,7 +57,11 @@ router.get('/stats', async (req, res) => {
 router.get('/files', async (req, res) => {
   try {
     const files = await db.all(`
-      SELECT f.*, u.name as user_name, u.email as user_email
+      SELECT f.id, f.service, f.filename, f.filepath, f.brand, f.model, f.year, 
+             f.ecu, f.engine, f.description, f.status, f.tuner_notes, 
+             f.download_count, f.download_limit, f.expires_at,
+             f.payment_status, f.result_filepath, f.created_at, f.updated_at,
+             u.name as user_name, u.email as user_email
       FROM files f LEFT JOIN users u ON f.user_id = u.id
       ORDER BY f.created_at DESC LIMIT 200
     `);
