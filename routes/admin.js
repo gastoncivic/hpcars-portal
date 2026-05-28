@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { verifyToken, isAdmin } = require('./auth');
+const { sendEmail, fileReady } = require('./email');
 
 const router = express.Router();
 
@@ -86,8 +87,12 @@ router.put('/files/:id/status', (req, res) => {
         '✅ Archivo listo para descargar',
         `Tu archivo de ${file.service} para ${file.brand} ${file.model} está listo. Ingresá al portal para descargarlo.`
       );
-      // TODO: Send email notification to user
-      console.log(`📧 Notifying ${file.email} — file #${file.id} is ready`);
+      // Send email notification
+      if (file && file.email) {
+        const { subject, html } = fileReady(file.name || 'Cliente', { service: file.service, brand: file.brand, model: file.model, fileId: file.id, tunerNotes: file.tuner_notes });
+        sendEmail({ to: file.email, subject, html });
+        console.log(`📧 Email enviado a ${file.email}`);
+      }
     }
 
     res.json({ success: true, status });
