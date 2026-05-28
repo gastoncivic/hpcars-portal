@@ -78,7 +78,7 @@ router.put('/files/:id/status', async (req, res) => {
           [file.user_id, 'file_ready', '✅ Archivo listo', `Tu archivo de ${file.service} para ${file.brand} ${file.model} está listo.`]);
         try {
           const { subject, html } = fileReady(file.name||'Cliente', { service: file.service, brand: file.brand, model: file.model, fileId: file.id });
-          sendEmail({ to: file.email, subject, html });
+          sendEmail({ to: file.email, subject, html }).catch(e => console.error('Email error:', e.message));
         } catch(e) {}
       }
     }
@@ -119,12 +119,14 @@ router.post('/files/:id/upload-result', async (req, res) => {
       if (file) {
         await db.run('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)',
           [file.user_id, 'file_ready', '✅ Archivo listo para descargar', `Tu archivo de ${file.service} está listo.`]);
+        // Fire and forget — don't block the response
         try {
           const { subject, html } = fileReady(file.name||'Cliente', { service: file.service, brand: file.brand, model: file.model, fileId: file.id, tunerNotes: tuner_notes });
           console.log(`📧 Enviando a ${file.email}`);
-          const r = await sendEmail({ to: file.email, subject, html });
-          console.log(`📧 Resultado:`, JSON.stringify(r));
-        } catch(e) { console.error('Email error:', e.message); }
+          sendEmail({ to: file.email, subject, html })
+            .then(r => console.log(`📧 Resultado:`, JSON.stringify(r)))
+            .catch(e => console.error('📧 Email error:', e.message));
+        } catch(e) { console.error('Email setup error:', e.message); }
       }
       res.json({ success: true });
     } catch (err) { res.status(500).json({ error: err.message }); }
