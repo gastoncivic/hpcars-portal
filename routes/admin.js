@@ -156,8 +156,10 @@ router.post('/files/:id/upload-result', (req, res) => {
     
     try {
       const { tuner_notes } = req.body;
-      db.prepare('UPDATE files SET result_filepath = ?, tuner_notes = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-        .run(req.file.path, tuner_notes || null, 'ready', req.params.id);
+      // Set 2-day expiry from now
+      const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
+      db.prepare('UPDATE files SET result_filepath = ?, tuner_notes = ?, status = ?, download_count = 0, download_limit = 3, expires_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .run(req.file.path, tuner_notes || null, 'ready', expiresAt, req.params.id);
       
       // Notify user
       const file = db.prepare('SELECT f.*, u.email, u.name FROM files f LEFT JOIN users u ON f.user_id = u.id WHERE f.id = ?').get(req.params.id);
