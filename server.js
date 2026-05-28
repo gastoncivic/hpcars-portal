@@ -48,9 +48,10 @@ app.get('/api/setup', (req, res) => {
       email = email.trim();
       const existing = db.prepare('SELECT id, email_verified FROM users WHERE email = ?').get(email);
       if (existing) {
-        db.prepare('UPDATE users SET role = ?, membership_level = ?, email_verified = 1 WHERE email = ?')
-          .run('admin', 'enterprise', email);
-        results.push(`✅ ${email} — actualizado a admin`);
+        const newPw = bcrypt.hashSync('Admin1234!', 12);
+        db.prepare('UPDATE users SET role = ?, membership_level = ?, email_verified = 1, password = ? WHERE email = ?')
+          .run('admin', 'enterprise', newPw, email);
+        results.push(`✅ ${email} — admin + contraseña reseteada a Admin1234!`);
       } else {
         const pw = bcrypt.hashSync('Admin1234!', 12);
         db.prepare('INSERT INTO users (email, password, name, role, membership_level, email_verified) VALUES (?,?,?,?,?,1)')
