@@ -291,6 +291,84 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
   .header-actions .lang-btn{padding:3px 8px;font-size:.7rem}
   .logo-badge{display:none}
 }
+
+/* ═══════════════════════════════════
+   SPECIAL EFFECTS
+   ═══════════════════════════════════ */
+
+/* 1. ANIMATED GRID BACKGROUND */
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(59,130,246,.06) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(59,130,246,.06) 1px,transparent 1px);
+  background-size:50px 50px;
+  animation:gridMove 20s linear infinite;pointer-events:none;z-index:0}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:50px 50px}}
+
+/* 2. GLOW PULSE ON HERO BADGE */
+.hero-badge{animation:badgePulse 3s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.3)}50%{box-shadow:0 0 20px 4px rgba(59,130,246,.2)}}
+
+/* 3. TYPEWRITER CURSOR ON H1 */
+.highlight::after{content:'|';color:var(--accent);animation:blink-cursor .8s step-end infinite;margin-left:2px}
+@keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
+
+/* 4. BRANCH CARDS - GLOW ON HOVER */
+.branch-card[data-branch="chiptuning"]:hover{box-shadow:0 0 30px rgba(232,50,26,.25),0 12px 40px rgba(0,0,0,.3)}
+.branch-card[data-branch="immo"]:hover{box-shadow:0 0 30px rgba(245,158,11,.2),0 12px 40px rgba(0,0,0,.3)}
+.branch-card[data-branch="seedkey"]:hover{box-shadow:0 0 30px rgba(59,130,246,.25),0 12px 40px rgba(0,0,0,.3)}
+.branch-card[data-branch="special"]:hover{box-shadow:0 0 30px rgba(34,197,94,.2),0 12px 40px rgba(0,0,0,.3)}
+
+/* 5. ANIMATED TOP BORDER ON BRANCH CARDS */
+.branch-card::before{transition:all .3s}
+.branch-card:hover::before{filter:brightness(1.4);box-shadow:0 0 15px currentColor}
+
+/* 6. STATS COUNTER ANIMATION */
+.stat-num{transition:all .3s}
+
+/* 7. CTA BUTTON SHINE EFFECT */
+.cta-main{position:relative;overflow:hidden}
+.cta-main::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  animation:shine 3s ease-in-out infinite}
+@keyframes shine{0%{left:-100%}50%,100%{left:150%}}
+
+/* 8. SCROLL REVEAL - FADE IN UP */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* 9. FLOATING ANIMATION ON BRANCH ICONS */
+.branch-icon{animation:floatIcon 3s ease-in-out infinite}
+.branch-card:nth-child(2) .branch-icon{animation-delay:.5s}
+.branch-card:nth-child(3) .branch-icon{animation-delay:1s}
+.branch-card:nth-child(4) .branch-icon{animation-delay:1.5s}
+@keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* 10. NEON GLOW ON LOGO */
+.logo:hover .logo span:first-child{text-shadow:0 0 20px rgba(232,50,26,.8)}
+.logo-badge{animation:badgeBlink 4s ease-in-out infinite}
+@keyframes badgeBlink{0%,90%,100%{opacity:1}95%{opacity:.6}}
+
+/* 11. STAT NUMBERS GLOW */
+.stat-num{text-shadow:0 0 20px rgba(59,130,246,.3)}
+
+/* 12. HERO LINE ANIMATION */
+.hero::after{animation:lineGrow 2s ease-out forwards}
+@keyframes lineGrow{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+
+/* 13. SECTION TAG SHIMMER */
+.section-tag{position:relative;overflow:hidden}
+.section-tag::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(59,130,246,.3),transparent);
+  animation:tagShimmer 4s ease-in-out infinite}
+@keyframes tagShimmer{0%{left:-100%}50%,100%{left:150%}}
+
+/* 14. TRUST ITEM HOVER GLOW */
+.trust-item{transition:.3s}
+.trust-item:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(59,130,246,.15)}
+
+/* 15. MODAL OPEN ANIMATION */
+.modal{animation:modalPop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalPop{from{transform:scale(.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 </style>
 </head>
 <body>
@@ -986,6 +1064,47 @@ document.addEventListener('keydown', e => {
     showToast(currentLang === 'es' ? 'Error al iniciar sesión con Google' : 'Error signing in with Google', 'err');
   }
 })();
+
+// ─── SCROLL REVEAL ───
+const revealEls = document.querySelectorAll('.branches-grid > *, .trust-grid > *, .plans-grid > *, .how-cols > *, .stat-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 100);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+revealEls.forEach(el => { el.classList.add('reveal'); observer.observe(el); });
+
+// ─── COUNTER ANIMATION ───
+function animateCounter(el, target, suffix='') {
+  let start = 0;
+  const duration = 2000;
+  const step = timestamp => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const val = Math.floor(progress * target);
+    el.textContent = val + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target + suffix;
+  };
+  requestAnimationFrame(step);
+}
+
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = e.target.querySelectorAll('.stat-num');
+      nums[0] && animateCounter(nums[0].querySelector('span') || nums[0], 12, 'K+');
+      nums[1] && animateCounter(nums[1].querySelector('span') || nums[1], 98, '%');
+      statsObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) statsObserver.observe(statsBar);
+
 </script>
 </body>
 </html>
