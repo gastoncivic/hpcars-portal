@@ -102,21 +102,44 @@ router.get('/download/:id', verifyToken, (req, res) => {
   try {
     const file = db.prepare('SELECT * FROM files WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
     if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
-    if (file.status !== 'ready') return res.status(403).json({ error: 'El archivo no está listo para descargar' });
+    if (file.status === 'expired') return res.status(410).json({ error: 'El archivo expiró (2 días o 3 descargas)' });
+    if (file.status !== 'ready' && file.status !== 'completed') return res.status(403).json({ error: 'El archivo no está listo para descargar' });
     if (!file.result_filepath || !fs.existsSync(file.result_filepath)) {
-      return res.status(404).json({ error: 'Archivo resultado no encontrado' });
+      return res.status(404).json({ error: 'Archivo resultado no encontrado en el servidor' });
     }
 
-    // Mark as completed
-    db.prepare('UPDATE files SET status = ? WHERE id = ?').run('completed', file.id);
+    // Check expiry
+    if (file.expires_at && new Date(file.expires_at) < new Date()) {
+      db.prepare("UPDATE files SET status = 'expired' WHERE id = ?").run(file.id);
+      try { fs.unlinkSync(file.result_filepath); } catch(e) {}
+      return res.status(410).json({ error: 'El archivo expiró (límite de 2 días alcanzado)' });
+    }
+
+    // Check download limit
+    const newCount = (file.download_count || 0) + 1;
+    const limit = file.download_limit || 3;
+    
+    if (newCount >= limit) {
+      // Last download — mark expired after this one
+      db.prepare("UPDATE files SET download_count = ?, status = 'expired' WHERE id = ?").run(newCount, file.id);
+      // Send download then delete file
+      res.download(file.result_filepath, `hpcars_${file.service}_${file.brand}_${file.model}.bin`, (err) => {
+        if (!err) {
+          try { fs.unlinkSync(file.result_filepath); } catch(e) {}
+        }
+      });
+    } else {
+      db.prepare('UPDATE files SET download_count = ? WHERE id = ?').run(newCount, file.id);
+      res.download(file.result_filepath, `hpcars_${file.service}_${file.brand}_${file.model}.bin`);
+    }
 
     // Log download
     db.prepare('INSERT INTO usage_logs (user_id, action, details) VALUES (?,?,?)').run(
-      req.user.id, 'download', JSON.stringify({ fileId: file.id, service: file.service })
+      req.user.id, 'download', JSON.stringify({ fileId: file.id, service: file.service, downloadNum: newCount, limit })
     );
 
-    res.download(file.result_filepath, `hpcars_${file.service}_${file.brand}_${file.model}.bin`);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error al descargar' });
   }
 });
