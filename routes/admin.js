@@ -114,7 +114,14 @@ router.put('/files/:id/result', (req, res) => {
 });
 
 // ─── DOWNLOAD ORIGINAL FILE ───
-router.get('/files/:id/download-original', (req, res) => {
+router.get('/files/:id/download-original', (req, res, next) => {
+  // Accept token from query param for direct browser downloads
+  const qToken = req.query.t;
+  if (qToken && !req.headers.authorization) {
+    req.headers.authorization = 'Bearer ' + qToken;
+  }
+  next();
+}, verifyToken, isAdmin, (req, res) => {
   try {
     const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
     if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
@@ -142,7 +149,7 @@ router.post('/files/:id/upload-result', (req, res) => {
   });
   const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }).single('result');
   
-  upload(req, res, (err) => {
+  upload(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'No se recibió archivo' });
     
@@ -165,8 +172,10 @@ router.post('/files/:id/upload-result', (req, res) => {
             service: file.service, brand: file.brand, model: file.model, 
             fileId: file.id, tunerNotes: tuner_notes 
           });
-          sendEmail({ to: file.email, subject, html });
-        } catch(e) { console.error('Email error:', e.message); }
+          console.log(`📧 Enviando email a: ${file.email}`);
+          const emailResult = await sendEmail({ to: file.email, subject, html });
+          console.log(`📧 Resultado email:`, JSON.stringify(emailResult));
+        } catch(e) { console.error('Email error:', e.message, e.stack); }
       }
       
       res.json({ success: true, message: 'Archivo resultado subido y usuario notificado' });
