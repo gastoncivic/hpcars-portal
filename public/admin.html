@@ -169,6 +169,32 @@ td{padding:.75rem 1rem;font-size:.83rem}
   </div>
 </div>
 
+<!-- UPLOAD RESULT MODAL -->
+<div id="uploadResultModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:440px;overflow:hidden;animation:slideUp .25s ease">
+    <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800">⬆️ Subir archivo resultado</h3>
+      <button onclick="closeUploadResult()" style="background:var(--glass);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.9rem">✕</button>
+    </div>
+    <div style="padding:1.5rem">
+      <p id="uploadResultLabel" style="color:var(--muted);font-size:.9rem;margin-bottom:1rem"></p>
+      <div style="margin-bottom:.875rem">
+        <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.35rem">Notas del tuner (opcional)</label>
+        <textarea id="tunerNotes" style="width:100%;background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;min-height:70px;resize:vertical" placeholder="Stage 1 aplicado, +25hp. EGR desactivado..."></textarea>
+      </div>
+      <div style="border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;margin-bottom:1rem" onclick="document.getElementById('resultFileInput').click()">
+        <input type="file" id="resultFileInput" style="display:none" onchange="handleResultFile(this)"/>
+        <div>📂 <strong>Hacé clic para seleccionar el archivo procesado</strong></div>
+        <div id="resultFileName" style="color:var(--green);font-size:.8rem;margin-top:.3rem"></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.2rem">.bin .ori .hex · Max 50MB</div>
+      </div>
+      <button onclick="submitResult()" style="width:100%;background:var(--green);border:none;color:#07080f;padding:12px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;cursor:pointer" id="submitResultBtn">
+        ✅ SUBIR Y NOTIFICAR USUARIO
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span id="ti">✅</span><span id="tm"></span></div>
 
 <script>
@@ -259,10 +285,10 @@ function renderFileTable(el, files, compact=false) {
       <td>${branchBadge(f.service)}</td>
       <td>${statusBadge(f.status)}</td>
       <td style="color:var(--muted);font-size:.75rem">${timeAgo(f.created_at)}</td>
-      ${compact ? '' : `<td>
-        <button class="action-btn green" onclick="setStatus(${f.id},'ready')">✅ Listo</button>
-        <button class="action-btn blue" onclick="setStatus(${f.id},'processing')">⚙️</button>
-        <button class="action-btn amber" onclick="setStatus(${f.id},'waiting')">🕐</button>
+      ${compact ? '' : `<td style="white-space:nowrap">
+        ${f.filepath ? `<button class="action-btn blue" onclick="dlOriginal(${f.id})" title="Descargar original">⬇️ Original</button>` : '<span style="color:var(--muted);font-size:.72rem">Sin archivo</span>'}
+        <button class="action-btn green" onclick="openUploadResult(${f.id},'${f.brand} ${f.model}')" title="Subir resultado">⬆️ Resultado</button>
+        <button class="action-btn amber" onclick="setStatus(${f.id},'processing')">⚙️</button>
         <button class="action-btn red" onclick="delFile(${f.id})">🗑️</button>
       </td>`}
     </tr>`).join('');
@@ -364,6 +390,64 @@ async function loadLogs() {
 async function loadAll() {
   await loadStats();
   await loadRecentFiles();
+}
+
+// ─── DOWNLOAD ORIGINAL ───
+async function dlOriginal(id) {
+  const token = localStorage.getItem('hpcars_token');
+  window.open(`/api/admin/files/${id}/download-original?t=${token}`, '_blank');
+}
+
+// ─── UPLOAD RESULT ───
+let currentResultFileId = null;
+let currentResultFile = null;
+
+function openUploadResult(id, label) {
+  currentResultFileId = id;
+  currentResultFile = null;
+  document.getElementById('uploadResultLabel').textContent = `Archivo #${id} — ${label}`;
+  document.getElementById('tunerNotes').value = '';
+  document.getElementById('resultFileName').textContent = '';
+  document.getElementById('resultFileInput').value = '';
+  const modal = document.getElementById('uploadResultModal');
+  modal.style.display = 'flex';
+}
+function closeUploadResult() {
+  document.getElementById('uploadResultModal').style.display = 'none';
+}
+function handleResultFile(input) {
+  if (input.files[0]) {
+    currentResultFile = input.files[0];
+    document.getElementById('resultFileName').textContent = `📎 ${input.files[0].name}`;
+  }
+}
+async function submitResult() {
+  if (!currentResultFile) return toast('Seleccioná un archivo primero', 'err');
+  const btn = document.getElementById('submitResultBtn');
+  btn.disabled = true;
+  btn.textContent = 'Subiendo...';
+  try {
+    const fd = new FormData();
+    fd.append('result', currentResultFile);
+    fd.append('tuner_notes', document.getElementById('tunerNotes').value);
+    const token = localStorage.getItem('hpcars_token');
+    const r = await fetch(`/api/admin/files/${currentResultFileId}/upload-result`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token },
+      body: fd
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error);
+    closeUploadResult();
+    toast('✅ Archivo subido y usuario notificado por email');
+    loadQueue();
+    loadRecentFiles();
+  } catch(e) {
+    toast(e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✅ SUBIR Y NOTIFICAR USUARIO';
+  }
 }
 
 loadAll();
