@@ -113,6 +113,69 @@ router.put('/files/:id/result', (req, res) => {
   }
 });
 
+// ─── DOWNLOAD ORIGINAL FILE ───
+router.get('/files/:id/download-original', (req, res) => {
+  try {
+    const file = db.prepare('SELECT * FROM files WHERE id = ?').get(req.params.id);
+    if (!file) return res.status(404).json({ error: 'Archivo no encontrado' });
+    if (!file.filepath) return res.status(404).json({ error: 'No hay archivo original' });
+    
+    const fs = require('fs');
+    if (!fs.existsSync(file.filepath)) return res.status(404).json({ error: 'Archivo no encontrado en disco' });
+    
+    const filename = file.filename || `original_${file.id}.bin`;
+    res.download(file.filepath, filename);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al descargar' });
+  }
+});
+
+// ─── UPLOAD RESULT FILE (admin sube archivo procesado) ───
+router.post('/files/:id/upload-result', (req, res) => {
+  const multer = require('multer');
+  const path = require('path');
+  const RESULTS_DIR = process.env.RESULTS_DIR || path.join(__dirname, '../results');
+  
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, RESULTS_DIR),
+    filename: (req, file, cb) => cb(null, `result_${req.params.id}_${Date.now()}${path.extname(file.originalname)}`)
+  });
+  const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }).single('result');
+  
+  upload(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: 'No se recibió archivo' });
+    
+    try {
+      const { tuner_notes } = req.body;
+      db.prepare('UPDATE files SET result_filepath = ?, tuner_notes = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .run(req.file.path, tuner_notes || null, 'ready', req.params.id);
+      
+      // Notify user
+      const file = db.prepare('SELECT f.*, u.email, u.name FROM files f LEFT JOIN users u ON f.user_id = u.id WHERE f.id = ?').get(req.params.id);
+      if (file) {
+        db.prepare('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)').run(
+          file.user_id, 'file_ready', '✅ Archivo listo para descargar',
+          `Tu archivo de ${file.service} para ${file.brand} ${file.model} está listo.`
+        );
+        // Send email
+        try {
+          const { sendEmail, fileReady } = require('./email');
+          const { subject, html } = fileReady(file.name || 'Cliente', { 
+            service: file.service, brand: file.brand, model: file.model, 
+            fileId: file.id, tunerNotes: tuner_notes 
+          });
+          sendEmail({ to: file.email, subject, html });
+        } catch(e) { console.error('Email error:', e.message); }
+      }
+      
+      res.json({ success: true, message: 'Archivo resultado subido y usuario notificado' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+});
+
 // ─── DELETE FILE ───
 router.delete('/files/:id', (req, res) => {
   try {
