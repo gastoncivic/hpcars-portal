@@ -489,6 +489,21 @@ async function submitFile() {
 // ─── LOGOUT ───
 function logout() { localStorage.removeItem('hpcars_token'); localStorage.removeItem('hpcars_user'); window.location.href='/'; }
 
+// ─── OAUTH CALLBACK ───
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  const oauthToken = p.get('token');
+  const oauthUser = p.get('user');
+  if (oauthToken && oauthUser) {
+    try {
+      const user = JSON.parse(decodeURIComponent(oauthUser));
+      localStorage.setItem('hpcars_token', oauthToken);
+      localStorage.setItem('hpcars_user', JSON.stringify(user));
+      window.history.replaceState({}, '', window.location.pathname);
+    } catch(e) {}
+  }
+})();
+
 // ─── INIT ───
 loadFiles();
 loadNotifs();
