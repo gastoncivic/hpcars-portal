@@ -502,7 +502,24 @@ async function submitFile() {
     const d = await r.json();
     clearInterval(iv); fill.style.width='100%';
     if (!r.ok) throw new Error(d.error);
-    setTimeout(()=>{ closeModal('uploadModal'); toast(lang==='es'?'✅ Archivo recibido. Te notificamos por email.':'✅ File received. We will notify you by email.'); loadFiles(); btn.disabled=false; prog.style.display='none'; },600);
+    setTimeout(()=>{
+      closeModal('uploadModal');
+      toast(lang==='es'?'✅ Archivo recibido. Te notificamos por email.':'✅ File received. We will notify you by email.');
+      // Reset form
+      selSvc = null;
+      selFile = null;
+      document.querySelectorAll('.service-opt').forEach(o=>o.classList.remove('selected'));
+      document.getElementById('vBrand').value = '';
+      document.getElementById('vModel').value = '';
+      document.getElementById('vYear').value = '';
+      document.getElementById('vEcu').value = '';
+      document.getElementById('vDesc').value = '';
+      document.getElementById('dzFn').textContent = '';
+      document.getElementById('fileInput').value = '';
+      btn.disabled=false;
+      prog.style.display='none';
+      loadFiles();
+    },600);
   } catch(e) { clearInterval(iv); toast(e.message,'err'); btn.disabled=false; prog.style.display='none'; }
 }
 
