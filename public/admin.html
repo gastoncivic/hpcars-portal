@@ -392,6 +392,12 @@ async function loadAll() {
   await loadRecentFiles();
 }
 
+// ─── TOGGLE DETAIL ROW ───
+function toggleDetail(id) {
+  const row = document.getElementById('detail-'+id);
+  if (row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+}
+
 // ─── DOWNLOAD ORIGINAL ───
 async function dlOriginal(id) {
   const token = localStorage.getItem('hpcars_token');
