@@ -250,7 +250,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
       <span class="lang-es">Iniciar sesión</span>
       <span class="lang-en" style="display:none">Login</span>
     </button>
-    <button class="btn-primary" onclick="openModal('registerModal')">
+    <button class="btn-primary" id="registerBtn" onclick="openModal('registerModal')">
       <span class="lang-es">Registrarse</span>
       <span class="lang-en" style="display:none">Sign Up</span>
     </button>
@@ -718,9 +718,19 @@ function showToast(msg, type = 'ok') {
 // ─── AUTH CHECK ───
 const stored = localStorage.getItem('hpcars_user');
 if (stored) {
-  const user = JSON.parse(stored);
-  document.getElementById('loginBtn').textContent = user.name?.split(' ')[0] || 'Dashboard';
-  document.getElementById('loginBtn').onclick = () => window.location.href = '/dashboard.html';
+  try {
+    const user = JSON.parse(stored);
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    loginBtn.textContent = user.name?.split(' ')[0] || 'Dashboard';
+    loginBtn.onclick = () => window.location.href = user.role === 'admin' ? '/admin.html' : '/dashboard.html';
+    // Show logout button
+    registerBtn.textContent = 'Cerrar sesión';
+    registerBtn.style.background = 'transparent';
+    registerBtn.style.border = '1px solid var(--border)';
+    registerBtn.style.color = 'var(--muted)';
+    registerBtn.onclick = () => window.location.href = '/logout';
+  } catch(e) {}
 }
 
 // ─── LOGIN ───
