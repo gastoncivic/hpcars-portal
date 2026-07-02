@@ -4,6 +4,7 @@ const fs = require('fs');
 const { db } = require('../db');
 const { verifyToken } = require('./auth');
 const { sendEmail, fileReceived, fileReady } = require('./email');
+const { hasUnlimitedPlan } = require('./payments');
 
 const router = express.Router();
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, '../uploads');
@@ -25,9 +26,10 @@ router.post('/submit', verifyToken, async (req, res) => {
         [req.user.id, req.user.email, req.user.email.split('@')[0], role, role==='admin'?'enterprise':'free']);
     }
 
+    const tool = await db.get('SELECT price_usd FROM tools WHERE name = ? OR branch = ?', [service, service]);
     const result = await db.run(
-      'INSERT INTO files (user_id, service, filename, filepath, brand, model, year, ecu, engine, description, status) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-      [req.user.id, service, file?.originalname||null, file?.path||null, brand, model, year||null, ecu||null, engine||null, description||null, 'pending']
+      'INSERT INTO files (user_id, service, filename, filepath, brand, model, year, ecu, engine, description, status, price_usd) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      [req.user.id, service, file?.originalname||null, file?.path||null, brand, model, year||null, ecu||null, engine||null, description||null, 'pending', tool?.price_usd || null]
     );
 
     await db.run('INSERT INTO notifications (user_id, type, title, message) VALUES (?,?,?,?)',
@@ -52,7 +54,7 @@ router.post('/submit', verifyToken, async (req, res) => {
 router.get('/my', verifyToken, async (req, res) => {
   try {
     const files = await db.all(
-      'SELECT id, service, filename, brand, model, year, ecu, engine, description, status, payment_status, tuner_notes, download_count, download_limit, expires_at, created_at, updated_at FROM files WHERE user_id = ? ORDER BY created_at DESC',
+      'SELECT id, service, filename, brand, model, year, ecu, engine, description, status, payment_status, price_usd, tuner_notes, download_count, download_limit, expires_at, created_at, updated_at FROM files WHERE user_id = ? ORDER BY created_at DESC',
       [req.user.id]
     );
     res.json({ files });
@@ -76,6 +78,16 @@ router.get('/download/:id', verifyToken, async (req, res) => {
     if (file.status === 'expired') return res.status(410).json({ error: 'El archivo expiró (2 días o 3 descargas)' });
     if (!['ready','completed'].includes(file.status)) return res.status(403).json({ error: 'El archivo no está listo' });
     if (!file.result_filepath || !fs.existsSync(file.result_filepath)) return res.status(404).json({ error: 'Archivo no encontrado en disco' });
+
+    // ─── PADDLE: pago requerido salvo plan ilimitado activo ───
+    const user = await db.get('SELECT subscription_status, subscription_plan FROM users WHERE id = ?', [req.user.id]);
+    if (!hasUnlimitedPlan(user) && file.payment_status !== 'paid') {
+      return res.status(402).json({
+        error: 'Pago requerido',
+        price_usd: file.price_usd,
+        message: 'Este archivo requiere pago antes de la descarga.'
+      });
+    }
 
     if (file.expires_at && new Date(file.expires_at) < new Date()) {
       await db.run("UPDATE files SET status = 'expired' WHERE id = ?", [file.id]);
@@ -115,3 +127,4 @@ router.put('/notifications/:id/read', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
