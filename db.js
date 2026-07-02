@@ -142,6 +142,30 @@ async function initializeDatabase() {
 
   console.log('✅ Tablas inicializadas');
 
+  // ─── PADDLE: columnas nuevas (no rompe nada existente) ───
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS paddle_customer_id TEXT`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS paddle_subscription_id TEXT`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'none'`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan TEXT DEFAULT 'free'`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_renews_at TIMESTAMP`);
+
+  await pool.query(`ALTER TABLE files ADD COLUMN IF NOT EXISTS price_usd NUMERIC(10,2)`);
+  await pool.query(`ALTER TABLE files ADD COLUMN IF NOT EXISTS paddle_transaction_id TEXT`);
+
+  await pool.query(`ALTER TABLE tools ADD COLUMN IF NOT EXISTS price_usd NUMERIC(10,2) DEFAULT 0`);
+  await pool.query(`ALTER TABLE tools ADD COLUMN IF NOT EXISTS paddle_price_id TEXT`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payment_events (
+      id SERIAL PRIMARY KEY,
+      paddle_event_id TEXT UNIQUE,
+      event_type TEXT,
+      payload JSONB,
+      processed_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  console.log('✅ Columnas y tabla de Paddle verificadas');
+
   // Seed admins
   const adminEmails = (process.env.ADMIN_EMAILS || 'angelgastoncalvo@gmail.com').split(',').map(e => e.trim());
   for (const email of adminEmails) {
@@ -177,3 +201,4 @@ async function initializeDatabase() {
 }
 
 module.exports = { db, pool, initializeDatabase };
+
