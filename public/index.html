@@ -246,6 +246,7 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem
   .hdr-right .btn-ghost{display:none}
 }
 </style>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 </head>
 <body>
 
@@ -464,8 +465,8 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem
     <div class="section-label lang-en" style="display:none">Portal access</div>
     <h2 class="section-title lang-es">Planes y licencias</h2>
     <h2 class="section-title lang-en" style="display:none">Plans & licenses</h2>
-    <p class="section-sub lang-es">Pagos seguros con Paddle — próximamente. Por ahora contactanos para licencias.</p>
-    <p class="section-sub lang-en" style="display:none">Secure payments with Paddle — coming soon. For now contact us for licenses.</p>
+    <p class="section-sub lang-es">Pagos seguros con Paddle.</p>
+    <p class="section-sub lang-en" style="display:none">Secure payments with Paddle.</p>
     <div class="plans-grid">
       <div class="plan reveal">
         <div class="plan-name">Free</div>
@@ -491,10 +492,9 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem
         <div class="plan-pop-tag lang-es">Más popular</div>
         <div class="plan-pop-tag lang-en" style="display:none">Most popular</div>
         <div class="plan-name">Pro</div>
-        <div class="plan-price lang-es">Consultar</div>
-        <div class="plan-price lang-en" style="display:none">Contact us</div>
-        <div class="plan-period lang-es">Próximamente con Paddle</div>
-        <div class="plan-period lang-en" style="display:none">Coming soon with Paddle</div>
+        <div class="plan-price" id="proPriceDisplay">—</div>
+        <div class="plan-period lang-es">/ mes</div>
+        <div class="plan-period lang-en" style="display:none">/ month</div>
         <ul class="plan-feats">
           <li class="lang-es">Archivos ilimitados</li>
           <li class="lang-en" style="display:none">Unlimited files</li>
@@ -505,9 +505,9 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem
           <li class="lang-es">Respuesta rápida</li>
           <li class="lang-en" style="display:none">Fast response</li>
         </ul>
-        <button class="plan-btn" onclick="openModal('registerModal')">
-          <span class="lang-es">Registrarse</span>
-          <span class="lang-en" style="display:none">Sign up</span>
+        <button class="plan-btn" onclick="startSubscriptionCheckout('pro')">
+          <span class="lang-es">Suscribirme</span>
+          <span class="lang-en" style="display:none">Subscribe</span>
         </button>
       </div>
       <div class="plan reveal">
@@ -857,6 +857,53 @@ const ro=new IntersectionObserver((entries)=>{
   entries.forEach((e,i)=>{ if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('vis'),i*80); ro.unobserve(e.target); } });
 },{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// ── PADDLE ──
+let paddleConfig = null;
+(async function initPaddle() {
+  try {
+    const r = await fetch('/api/payments/config');
+    paddleConfig = await r.json();
+    if (!paddleConfig.ready) return;
+    if (paddleConfig.environment === 'sandbox') Paddle.Environment.set('sandbox');
+    Paddle.Initialize({
+      token: paddleConfig.clientToken,
+      eventCallback: function (evt) {
+        if (evt.name === 'checkout.completed') {
+          showToast(lang==='es' ? '✅ ¡Pago exitoso! Activando tu cuenta...' : '✅ Payment successful! Activating your account...');
+          setTimeout(() => window.location.href = '/dashboard.html', 1500);
+        }
+      }
+    });
+  } catch (e) { console.error('No se pudo cargar la config de Paddle', e); }
+})();
+
+function startSubscriptionCheckout(plan) {
+  const token = localStorage.getItem('hpcars_token');
+  const userStr = localStorage.getItem('hpcars_user');
+  if (!token || !userStr) {
+    showToast(lang==='es' ? 'Creá tu cuenta primero (es gratis)' : "Create your account first (it's free)", 'warn');
+    openModal('registerModal');
+    return;
+  }
+  if (!paddleConfig || !paddleConfig.ready) {
+    showToast(lang==='es' ? 'Los pagos todavía no están habilitados. Contactanos.' : 'Payments are not enabled yet. Contact us.', 'warn');
+    return;
+  }
+  const priceId = paddleConfig.prices[plan];
+  if (!priceId) {
+    showToast(lang==='es' ? `Plan ${plan} no configurado todavía` : `Plan ${plan} not configured yet`, 'err');
+    return;
+  }
+  const user = JSON.parse(userStr);
+  Paddle.Checkout.open({
+    items: [{ priceId, quantity: 1 }],
+    customer: { email: user.email },
+    customData: { type: 'subscription', plan, userId: String(user.id) },
+    settings: { displayMode: 'overlay', theme: 'dark', locale: lang }
+  });
+}
 </script>
 </body>
 </html>
+
