@@ -21,6 +21,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
 app.use(cors({ origin: '*', credentials: true, methods: ['GET','POST','PUT','DELETE','OPTIONS'], allowedHeaders: ['Content-Type','Authorization'] }));
+
+// ─── WEBHOOK PADDLE ───
+// Va ANTES de express.json() porque Paddle firma el body crudo sin parsear.
+const { router: paymentsRouter, webhookHandler } = require('./routes/payments');
+app.post('/api/webhooks/paddle', express.raw({ type: 'application/json' }), webhookHandler);
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(session({ secret: process.env.SESSION_SECRET || 'hpcars_session', resave: false, saveUninitialized: false }));
@@ -63,6 +69,7 @@ app.use('/api/files', (req, res, next) => {
 }, filesRouter);
 
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/payments', paymentsRouter);
 
 app.get('/logout', (req, res) => {
   res.send(`<!DOCTYPE html><html><head><script>localStorage.removeItem('hpcars_token');localStorage.removeItem('hpcars_user');window.location.href='/';</script></head><body style="background:#07080f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif"><p>Cerrando sesión...</p></body></html>`);
@@ -87,3 +94,4 @@ initializeDatabase().then(() => {
 }).catch(err => { console.error('DB init error:', err); process.exit(1); });
 
 module.exports = app;
+
