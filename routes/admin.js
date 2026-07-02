@@ -137,6 +137,33 @@ router.post('/files/:id/upload-result', async (req, res) => {
   });
 });
 
+// ─── TOOLS: precios y Paddle Price IDs ───
+router.get('/tools', async (req, res) => {
+  try {
+    const tools = await db.all('SELECT * FROM tools ORDER BY branch, name');
+    res.json({ tools });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.put('/tools/:id/pricing', async (req, res) => {
+  const { price_usd, paddle_price_id } = req.body;
+  try {
+    await db.run(
+      'UPDATE tools SET price_usd = COALESCE(?, price_usd), paddle_price_id = COALESCE(?, paddle_price_id) WHERE id = ?',
+      [price_usd ?? null, paddle_price_id ?? null, req.params.id]
+    );
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ─── MARCAR ARCHIVO PAGADO MANUALMENTE (transferencia, Prex, etc.) ───
+router.put('/files/:id/mark-paid', async (req, res) => {
+  try {
+    await db.run("UPDATE files SET payment_status = 'paid', updated_at = NOW() WHERE id = ?", [req.params.id]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // ─── DELETE FILE ───
 router.delete('/files/:id', async (req, res) => {
   try {
@@ -187,3 +214,4 @@ router.get('/logs', async (req, res) => {
 });
 
 module.exports = router;
+
