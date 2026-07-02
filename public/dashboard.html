@@ -140,6 +140,7 @@ td{padding:.875rem 1rem;font-size:.875rem}
 
 @media(max-width:900px){.sidebar{width:60px}.sb-logo-text,.sb-badge,.sb-user-info,.sb-section,.sb-item span,.sb-logout{display:none}.main{margin-left:60px}.content{padding:1rem}}
 </style>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 </head>
 <body>
 
@@ -385,6 +386,19 @@ function timeAgo(dt) {
   if (hrs < 24) return `${hrs}h`;
   return `${Math.floor(hrs/24)}d`;
 }
+function hasUnlimitedPlanLocal() {
+  try {
+    const u = JSON.parse(localStorage.getItem('hpcars_user') || '{}');
+    return u.subscription_status === 'active' && ['pro','enterprise'].includes(u.subscription_plan);
+  } catch { return false; }
+}
+function downloadOrPayBtn(f) {
+  if (hasUnlimitedPlanLocal() || f.payment_status === 'paid') {
+    return `<button class="dl-btn" onclick="download(${f.id})">${lang==='es'?'Descargar':'Download'}</button>`;
+  }
+  const price = f.price_usd ? `$${f.price_usd}` : '';
+  return `<button class="dl-btn" style="background:var(--red,#e8321a)" onclick="payAndDownload(${f.id})">${lang==='es'?`Pagar ${price} y descargar`:`Pay ${price} & download`}</button>`;
+}
 function buildTable(files, limit) {
   if (!files || !files.length) return `<div class="empty-state"><div class="es-icon">📂</div><p>${lang==='es'?'Aún no subiste archivos. Hacé clic en + Nuevo archivo.':'No files yet. Click + New file.'}</p></div>`;
   const rows = (limit ? files.slice(0, limit) : files).map(f => `
@@ -398,7 +412,7 @@ function buildTable(files, limit) {
       <td style="color:var(--muted);font-size:.8rem">${timeAgo(f.created_at)}</td>
       <td onclick="event.stopPropagation()">
         ${f.status==='ready'?`
-          <button class="dl-btn" onclick="download(${f.id})">${lang==='es'?'Descargar':'Download'}</button>
+          ${downloadOrPayBtn(f)}
           <div style="margin-top:3px">${expiryInfo(f)}</div>
         `:f.status==='expired'?'<span style="color:var(--muted);font-size:.78rem">⚠️ Expirado</span>':'—'}
       </td>
@@ -454,12 +468,55 @@ async function loadAllFiles() {
 
 async function download(id) {
   const r = await fetch(`/api/files/download/${id}`, { headers: { Authorization: 'Bearer '+token } });
+  if (r.status === 402) return payAndDownload(id);
   if (!r.ok) return toast(lang==='es'?'No se pudo descargar':'Download failed', 'err');
   const blob = await r.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url;
   a.download = `hpcars_file_${id}.bin`; a.click();
   URL.revokeObjectURL(url);
+}
+
+// ── PADDLE: pago unico por archivo ──
+let paddleReady = false;
+(async function initPaddle() {
+  try {
+    const r = await fetch('/api/payments/config');
+    const cfg = await r.json();
+    if (!cfg.ready) return;
+    if (cfg.environment === 'sandbox') Paddle.Environment.set('sandbox');
+    Paddle.Initialize({
+      token: cfg.clientToken,
+      eventCallback: function (evt) {
+        if (evt.name === 'checkout.completed') {
+          toast(lang==='es' ? '✅ Pago recibido. Actualizando...' : '✅ Payment received. Updating...');
+          setTimeout(() => { loadFiles(); loadAllFiles(); }, 3000);
+        }
+      }
+    });
+    paddleReady = true;
+  } catch (e) { console.error('Paddle init error', e); }
+})();
+
+async function payAndDownload(id) {
+  if (!paddleReady) return toast(lang==='es' ? 'Pagos no disponibles todavia' : 'Payments not available yet', 'err');
+  try {
+    const r = await fetch(`/api/payments/checkout-info/${id}`, { headers: { Authorization: 'Bearer '+token } });
+    const info = await r.json();
+    if (!r.ok) return toast(info.error || 'Error', 'err');
+    if (!info.paddlePriceId) {
+      return toast(lang==='es' ? 'Este servicio no tiene Price ID de Paddle asignado todavia.' : 'This service has no Paddle Price ID yet.', 'err');
+    }
+    const user = JSON.parse(localStorage.getItem('hpcars_user') || '{}');
+    Paddle.Checkout.open({
+      items: [{ priceId: info.paddlePriceId, quantity: 1 }],
+      customer: { email: user.email },
+      customData: info.customData,
+      settings: { displayMode: 'overlay', theme: 'dark', locale: lang }
+    });
+  } catch (e) {
+    toast(lang==='es' ? 'Error al iniciar el pago' : 'Error starting payment', 'err');
+  }
 }
 
 // ─── NOTIFICATIONS ───
@@ -571,3 +628,4 @@ setInterval(loadNotifs, 30000);
 </script>
 </body>
 </html>
+
